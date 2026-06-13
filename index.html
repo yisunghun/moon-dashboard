@@ -317,6 +317,66 @@
   }
   .arc-svg { width: 100%; }
 
+  /* 현재 위치 미니맵 카드 */
+  .locmap-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--r);
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .locmap-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.1rem 0.7rem;
+  }
+  .locmap-title {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .locmap-coords {
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  #pageMapWrap {
+    width: 100%;
+    height: 240px;
+    position: relative;
+    cursor: default;
+    background: #1a2b3c;
+  }
+  #pageMapCanvas { width: 100%; height: 100%; display: block; }
+  .locmap-footer {
+    padding: 0.6rem 1.1rem;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 0.5px solid var(--border);
+  }
+  .locmap-zoom-btns {
+    display: flex; gap: 6px;
+  }
+  .locmap-zoom-btn {
+    background: var(--bg3);
+    border: 0.5px solid var(--border2);
+    color: var(--text);
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-sans);
+    line-height: 1;
+    padding: 0;
+  }
+  .locmap-zoom-btn:active { opacity: 0.7; }
+
   /* Compass */
   .compass-card {
     background: var(--bg2);
@@ -630,6 +690,25 @@
       </div>
     </div>
   </div>
+
+  <!-- 현재 위치 미니맵 -->
+  <div class="locmap-card">
+    <div class="locmap-header">
+      <div class="locmap-title">📍 현재 위치</div>
+      <div class="locmap-coords" id="pageMapCoords">—</div>
+    </div>
+    <div id="pageMapWrap">
+      <canvas id="pageMapCanvas"></canvas>
+    </div>
+    <div class="locmap-footer">
+      <span id="pageMapName">위치 확인 중…</span>
+      <div class="locmap-zoom-btns">
+        <button class="locmap-zoom-btn" onclick="pageMapZoomOut()" aria-label="축소">−</button>
+        <button class="locmap-zoom-btn" onclick="pageMapZoomIn()"  aria-label="확대">+</button>
+      </div>
+    </div>
+  </div>
+
 
   <footer>
     <span id="footerLoc">현재 위치 기반</span> · 천문 계산: ELP2000 축약 알고리즘<br>
@@ -1191,6 +1270,7 @@ function reverseGeocode(lat, lng) {
     .then(data => {
       const addr = data.address || {};
       locationName = addr.city || addr.town || addr.village || addr.county || addr.state || '현재 위치';
+      document.getElementById('pageMapName').textContent = locationName;
       const coordStr = degToStr(lat, true) + ' ' + degToStr(lng, false);
       document.getElementById('locLabel').textContent  = coordStr + ' · ' + locationName + ' KST';
       document.getElementById('footerLoc').textContent = locationName + ' · ' + coordStr;
@@ -1210,6 +1290,7 @@ function onGeoSuccess(pos) {
   reverseGeocode(LAT, LNG);
   run();
   generateIcon();
+  initPageMap();
 }
 
 function onGeoError(err) {
@@ -1222,6 +1303,153 @@ function onGeoError(err) {
   generateIcon();
   // 수동 입력 모달 표시
   openLocModal();
+}
+
+// ── 페이지 현재 위치 미니맵 ─────────────────────────────────────
+let pageMapZoom = 13;
+let pageMapTiles = {};
+let pageMapInitialized = false;
+
+function pageLatLngToTile(lat, lng, z) {
+  const n = Math.pow(2, z);
+  const x = Math.floor((lng + 180) / 360 * n);
+  const latR = lat * Math.PI / 180;
+  const y = Math.floor((1 - Math.log(Math.tan(latR) + 1 / Math.cos(latR)) / Math.PI) / 2 * n);
+  return { x, y };
+}
+
+function pageTileOffset(tx, ty, cx, cy, z, cLat, cLng) {
+  const n = Math.pow(2, z);
+  const cTX = (cLng + 180) / 360 * n;
+  const cLatR = cLat * Math.PI / 180;
+  const cTY = (1 - Math.log(Math.tan(cLatR) + 1 / Math.cos(cLatR)) / Math.PI) / 2 * n;
+  return { px: Math.round((tx - cTX) * 256 + cx), py: Math.round((ty - cTY) * 256 + cy) };
+}
+
+function pageGetTile(x, y, z) {
+  const key = `${z}/${x}/${y}`;
+  if (pageMapTiles[key] && pageMapTiles[key].complete && pageMapTiles[key].naturalWidth > 0) return pageMapTiles[key];
+  if (!pageMapTiles[key]) {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    const sub = ['a','b','c'][((x + y) % 3 + 3) % 3];
+    img.src = `https://${sub}.tile.openstreetmap.org/${z}/${x}/${y}.png`;
+    img.onload = () => drawPageMap();
+    img.onerror = () => { pageMapTiles[key] = null; };
+    pageMapTiles[key] = img;
+  }
+  return null;
+}
+
+function drawPageMap() {
+  const wrap = document.getElementById('pageMapWrap');
+  const canvas = document.getElementById('pageMapCanvas');
+  if (!wrap || !canvas) return;
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+  if (!W || !H) return;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  const cx = W / 2, cy = H / 2;
+  const z = pageMapZoom;
+  const cTile = pageLatLngToTile(LAT, LNG, z);
+  const tilesX = Math.ceil(W / 256) + 2;
+  const tilesY = Math.ceil(H / 256) + 2;
+
+  // 배경
+  ctx.fillStyle = '#1a2b3c';
+  ctx.fillRect(0, 0, W, H);
+
+  // 타일 렌더링
+  for (let dx = -tilesX; dx <= tilesX; dx++) {
+    for (let dy = -tilesY; dy <= tilesY; dy++) {
+      const tx = cTile.x + dx, ty = cTile.y + dy;
+      if (ty < 0 || ty >= Math.pow(2, z)) continue;
+      const p = pageTileOffset(tx, ty, cx, cy, z, LAT, LNG);
+      const img = pageGetTile(tx, ty, z);
+      if (img) ctx.drawImage(img, p.px, p.py, 256, 256);
+    }
+  }
+
+  // 다크 오버레이
+  ctx.fillStyle = 'rgba(8,14,28,0.35)';
+  ctx.fillRect(0, 0, W, H);
+
+  // 정확도 원 (반투명)
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 28, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(74,127,193,0.15)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(74,127,193,0.5)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.restore();
+
+  // 위치 핀
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 10;
+  // 핀 줄기
+  ctx.beginPath();
+  ctx.moveTo(cx - 5, cy - 6);
+  ctx.quadraticCurveTo(cx, cy + 4, cx, cy + 2);
+  ctx.quadraticCurveTo(cx, cy + 4, cx + 5, cy - 6);
+  ctx.fillStyle = '#4a7fc1';
+  ctx.fill();
+  // 핀 원
+  ctx.beginPath();
+  ctx.arc(cx, cy - 17, 11, 0, Math.PI * 2);
+  ctx.fillStyle = '#4a7fc1';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.restore();
+
+  // 핀 내부 달 아이콘
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🌙', cx, cy - 17);
+
+  // 좌표 레이블 박스
+  const coordTxt = LAT.toFixed(4) + '°N  ' + LNG.toFixed(4) + '°E';
+  ctx.font = '11px "Noto Sans KR", sans-serif';
+  const tw = ctx.measureText(coordTxt).width;
+  const bx = cx - tw/2 - 9, by = cy + 10, bw = tw + 18, bh = 22;
+  ctx.fillStyle = 'rgba(11,14,23,0.75)';
+  ctx.beginPath();
+  ctx.roundRect(bx, by, bw, bh, 5);
+  ctx.fill();
+  ctx.fillStyle = '#e8e4d9';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(coordTxt, cx, by + bh / 2);
+
+  // 좌상단 줌 레벨 표시
+  ctx.font = '10px "Noto Sans KR", sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillText('z' + z, 8, 8);
+
+  // 좌표 업데이트
+  document.getElementById('pageMapCoords').textContent =
+    LAT.toFixed(5) + '°N, ' + LNG.toFixed(5) + '°E';
+}
+
+function pageMapZoomIn()  { pageMapZoom = Math.min(18, pageMapZoom + 1); drawPageMap(); }
+function pageMapZoomOut() { pageMapZoom = Math.max(3,  pageMapZoom - 1); drawPageMap(); }
+
+function initPageMap() {
+  if (pageMapInitialized) { drawPageMap(); return; }
+  pageMapInitialized = true;
+  // ResizeObserver로 캔버스 크기 반응형 처리
+  const wrap = document.getElementById('pageMapWrap');
+  if (wrap && window.ResizeObserver) {
+    new ResizeObserver(() => drawPageMap()).observe(wrap);
+  }
+  drawPageMap();
 }
 
 // ── Canvas 미니맵 ────────────────────────────────────────────────
@@ -1461,6 +1689,7 @@ function applyManualLoc() {
   reverseGeocode(LAT, LNG);
   run();
   generateIcon();
+  initPageMap();
 }
 
 function retryGeo() {
@@ -1479,6 +1708,7 @@ if ('geolocation' in navigator) {
   // 먼저 기본값으로 한 번 렌더링 후, 실제 위치 받으면 갱신
   run();
   generateIcon();
+  initPageMap();
   navigator.geolocation.getCurrentPosition(onGeoSuccess, onGeoError, {
     enableHighAccuracy: true,
     timeout: 10000,
@@ -1489,6 +1719,7 @@ if ('geolocation' in navigator) {
   document.getElementById('locLabel').textContent = '35°50′N 127°02′E · 전주 KST (기본값)';
   run();
   generateIcon();
+  initPageMap();
 }
 
 setInterval(run, 60000);
