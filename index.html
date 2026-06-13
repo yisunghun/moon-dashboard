@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>달력 — 현재 위치 월출 정보</title>
+
+<!-- PWA / 홈 화면 바로가기 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="달력">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b0e17">
+<meta name="description" content="현재 위치 기준 월출·월몰·방위 실시간 달력">
+
+<!-- 홈 화면 아이콘 (Canvas로 동적 생성) -->
+<link rel="apple-touch-icon" id="appleIcon" href="">
+<link rel="icon" id="favicon" href="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0b0e17;
+    --bg2:       #111623;
+    --bg3:       #181e2e;
+    --border:    rgba(255,255,255,0.07);
+    --border2:   rgba(255,255,255,0.13);
+    --text:      #e8e4d9;
+    --muted:     #7a809a;
+    --accent:    #c9a84c;
+    --accent2:   #4a7fc1;
+    --rise:      #4a9e6b;
+    --set:       #9e6b4a;
+    --font-sans: 'Noto Sans KR', sans-serif;
+    --font-serif:'Noto Serif KR', serif;
+    --r:         12px;
+    --r-sm:      8px;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg:     #f4f2ed;
+      --bg2:    #ffffff;
+      --bg3:    #eceae3;
+      --border: rgba(0,0,0,0.07);
+      --border2:rgba(0,0,0,0.13);
+      --text:   #1a1c26;
+      --muted:  #6b7080;
+    }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+    padding-top: max(2rem, env(safe-area-inset-top, 2rem));
+    padding-bottom: max(4rem, env(safe-area-inset-bottom, 4rem));
+    padding-left:  max(1rem, env(safe-area-inset-left,  1rem));
+    padding-right: max(1rem, env(safe-area-inset-right, 1rem));
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 1rem;
+  }
+  .header-left h1 {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .header-left .loc {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .header-right {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .clock {
+    font-size: 1.4rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  .date-str {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* Moon Hero */
+  .hero {
+    background: var(--bg2);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--r);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 14px;
+  }
+  .moon-svg-wrap {
+    flex-shrink: 0;
+  }
+  .hero-info { flex: 1; }
+  .phase-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: var(--font-serif);
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .phase-pct {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .horizon-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border2);
+    margin-bottom: 8px;
+  }
+  .badge-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+  }
+  .next-event {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* Grid 3 */
+  .grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--r);
+    padding: 1rem 1.1rem;
+  }
+  .card-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .card-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .card-value {
+    font-size: 1.3rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .card-sub {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* Grid 2 */
+  .grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .pos-row {
+    display: flex;
+    gap: 14px;
+    margin-top: 6px;
+  }
+  .pos-item .pi-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .pos-item .pi-val {
+    font-size: 1.05rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+    margin-top: 2px;
+  }
+  .badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .pill {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border2);
+    color: var(--muted);
+  }
+  .pill.active { color: var(--rise); border-color: var(--rise); }
+
+  /* Timeline */
+  .timeline-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--r);
+    padding: 1rem 1.25rem 1.25rem;
+    margin-bottom: 14px;
+  }
+  .tl-title {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .tl-track {
+    position: relative;
+    height: 6px;
+    background: var(--bg3);
+    border-radius: 3px;
+    margin-bottom: 8px;
+  }
+  .tl-fill {
+    position: absolute;
+    height: 100%;
+    border-radius: 3px;
+    background: var(--accent2);
+    opacity: 0.5;
+  }
+  .tl-now {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg2);
+    box-shadow: 0 0 6px rgba(201,168,76,0.5);
+    transition: left 0.8s ease;
+  }
+  .tl-axis {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+  }
+  .tl-events {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .tl-ev {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .tl-ev span {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .tl-ev.rise span { color: var(--rise); }
+  .tl-ev.set span  { color: var(--set); }
+  .tl-ev.transit span { color: var(--accent); }
+
+  /* Altitude arc */
+  .arc-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--r);
+    padding: 1rem 1.25rem;
+    margin-bottom: 14px;
+  }
+  .arc-title {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .arc-svg { width: 100%; }
+
+  /* Compass */
+  .compass-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--r);
+    padding: 1rem 1.25rem 1.5rem;
+    margin-bottom: 14px;
+  }
+  .compass-title {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .compass-layout {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  .compass-svg-wrap {
+    flex-shrink: 0;
+  }
+  .compass-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cinfo-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 0.5px solid var(--border);
+    padding-bottom: 8px;
+  }
+  .cinfo-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .cinfo-label { font-size: 11px; color: var(--muted); }
+  .cinfo-val   { font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--text); }
+  .cinfo-val.rise-col  { color: var(--rise); }
+  .cinfo-val.set-col   { color: var(--set); }
+  .cinfo-val.now-col   { color: var(--accent); }
+
+  @media (max-width: 480px) {
+    .compass-layout { flex-direction: column; align-items: center; gap: 1.2rem; }
+    .compass-info { width: 100%; }
+  }
+
+
+  /* 위치 입력 모달 */
+  .loc-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+  }
+  .loc-overlay.show { display: flex; }
+  .loc-modal {
+    background: var(--bg2);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--r);
+    padding: 1.5rem;
+    width: min(380px, 94vw);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  /* 미니맵 (Canvas 기반) */
+  #miniMap {
+    width: 100%; height: 210px;
+    border-radius: var(--r-sm);
+    border: 0.5px solid var(--border2);
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+    cursor: crosshair;
+    touch-action: none;
+  }
+  #mapCanvas {
+    width: 100%; height: 100%;
+    display: block;
+  }
+  .map-tap-hint {
+    position: absolute; bottom: 7px; left: 0; right: 0;
+    text-align: center; font-size: 10px;
+    color: rgba(255,255,255,0.55);
+    pointer-events: none;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+  .loc-modal h2 {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .loc-modal p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  .loc-input-row {
+    display: flex; gap: 8px; margin-bottom: 10px;
+  }
+  .loc-input-row label {
+    font-size: 11px; color: var(--muted);
+    display: block; margin-bottom: 4px;
+    letter-spacing: 0.05em;
+  }
+  .loc-input-row input {
+    width: 100%;
+    background: var(--bg3);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--r-sm);
+    color: var(--text);
+    font-size: 15px;
+    font-family: var(--font-sans);
+    padding: 8px 10px;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .loc-input-row input:focus { border-color: var(--accent2); }
+  .loc-btn-row { display: flex; gap: 8px; margin-top: 14px; }
+  .loc-btn {
+    flex: 1; padding: 10px;
+    border-radius: var(--r-sm);
+    border: none; cursor: pointer;
+    font-size: 14px; font-family: var(--font-sans); font-weight: 500;
+  }
+  .loc-btn.primary { background: var(--accent2); color: #fff; }
+  .loc-btn.secondary { background: var(--bg3); color: var(--muted); border: 0.5px solid var(--border2); }
+  .loc-btn:active { opacity: 0.8; }
+  .loc-edit-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; color: var(--muted);
+    background: none; border: none; cursor: pointer;
+    padding: 0; font-family: var(--font-sans);
+    text-decoration: underline; text-underline-offset: 3px;
+    margin-top: 3px;
+  }
+  .loc-edit-btn:hover { color: var(--text); }
+
+  /* Footer */
+  footer {
+    margin-top: 2.5rem;
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  footer a { color: var(--muted); text-decoration: underline; }
+
+  @media (max-width: 420px) {
+    .grid3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .hero { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .pos-row { flex-wrap: wrap; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-left">
+      <h1>달력 · 월출 정보</h1>
+      <div class="loc" id="locLabel">위치 확인 중…</div>
+      <button class="loc-edit-btn" onclick="openLocModal()">✎ 위치 변경</button>
+    </div>
+    <div class="header-right">
+      <div class="clock" id="clockEl">--:--:--</div>
+      <div class="date-str" id="dateEl">—</div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="moon-svg-wrap">
+      <svg width="88" height="88" viewBox="0 0 88 88" id="moonSvg">
+        <circle cx="44" cy="44" r="40" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+        <circle cx="44" cy="44" r="38" fill="#1a1c26" id="moonBg"/>
+        <g id="moonPhaseG" clip-path="url(#mc)"></g>
+        <clipPath id="mc"><circle cx="44" cy="44" r="38"/></clipPath>
+        <circle cx="44" cy="44" r="38" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+        <text id="phasePctSvg" x="44" y="49" text-anchor="middle" font-size="13" font-weight="500" fill="#e8e4d9" font-family="'Noto Sans KR',sans-serif"></text>
+      </svg>
+    </div>
+    <div class="hero-info">
+      <div class="phase-name" id="phaseNameEl">—</div>
+      <div class="phase-pct" id="phasePctEl">조도 —%</div>
+      <div class="horizon-badge" id="horizonBadge">
+        <span class="badge-dot" id="badgeDot"></span>
+        <span id="horizonText">—</span>
+      </div>
+      <div class="next-event" id="nextEventEl">—</div>
+    </div>
+  </div>
+
+  <!-- Rise / Transit / Set -->
+  <div class="grid3">
+    <div class="card">
+      <div class="card-label"><span class="card-dot" style="background:var(--rise)"></span>월출</div>
+      <div class="card-value" id="riseVal">—</div>
+      <div class="card-sub" id="riseAzEl">방위 —</div>
+    </div>
+    <div class="card">
+      <div class="card-label"><span class="card-dot" style="background:var(--accent)"></span>남중</div>
+      <div class="card-value" id="transitVal">—</div>
+      <div class="card-sub" id="transitElEl">고도 —</div>
+    </div>
+    <div class="card">
+      <div class="card-label"><span class="card-dot" style="background:var(--set)"></span>월몰</div>
+      <div class="card-value" id="setVal">—</div>
+      <div class="card-sub" id="setAzEl">방위 —</div>
+    </div>
+  </div>
+
+  <!-- Current position + badges -->
+  <div class="grid2">
+    <div class="card">
+      <div class="card-label">현재 위치</div>
+      <div class="pos-row">
+        <div class="pos-item">
+          <div class="pi-label">고도</div>
+          <div class="pi-val" id="curAltEl">—</div>
+        </div>
+        <div class="pos-item">
+          <div class="pi-label">방위각</div>
+          <div class="pi-val" id="curAzEl">—</div>
+        </div>
+        <div class="pos-item">
+          <div class="pi-label">거리</div>
+          <div class="pi-val" id="curDistEl">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">달 상태</div>
+      <div class="badges-row" id="badgesRow"></div>
+      <div style="font-size:11px; color:var(--muted); margin-top:8px;" id="extraNote">—</div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline-card">
+    <div class="tl-title">오늘의 달 궤적 (KST)</div>
+    <div class="tl-track">
+      <div class="tl-fill" id="tlFill"></div>
+      <div class="tl-now" id="tlNow"></div>
+    </div>
+    <div class="tl-axis">
+      <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span>
+    </div>
+    <div class="tl-events" id="tlEvents"></div>
+  </div>
+
+  <!-- Altitude arc for today -->
+  <div class="arc-card">
+    <div class="arc-title">고도 곡선 (오늘 KST 기준, 1시간 간격)</div>
+    <svg class="arc-svg" viewBox="0 0 600 150" id="arcSvg" role="img" aria-label="달의 오늘 고도 변화 곡선"></svg>
+  </div>
+
+  <!-- Compass direction -->
+  <div class="compass-card">
+    <div class="compass-title">방위 나침반 (현재 달 방향)</div>
+    <div class="compass-layout">
+      <div class="compass-svg-wrap">
+        <svg id="compassSvg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-label="달의 현재 방위각을 나타내는 나침반">
+          <title>방위 나침반</title>
+          <!-- 눈금 원 -->
+          <circle cx="80" cy="80" r="72" fill="none" stroke="var(--border2)" stroke-width="0.5"/>
+          <circle cx="80" cy="80" r="60" fill="none" stroke="var(--border)" stroke-width="0.5"/>
+          <!-- 눈금 tick (36개, 10° 간격) -->
+          <g id="compassTicks"></g>
+          <!-- 방위 글자 -->
+          <text x="80" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text)" font-family="'Noto Sans KR',sans-serif">N</text>
+          <text x="80" y="153" text-anchor="middle" font-size="11" font-weight="500" fill="var(--muted)" font-family="'Noto Sans KR',sans-serif">S</text>
+          <text x="152" y="84" text-anchor="middle" font-size="11" font-weight="500" fill="var(--muted)" font-family="'Noto Sans KR',sans-serif">E</text>
+          <text x="8" y="84" text-anchor="middle" font-size="11" font-weight="500" fill="var(--muted)" font-family="'Noto Sans KR',sans-serif">W</text>
+          <!-- 월출 방향 바늘 (초록) -->
+          <line id="riseNeedle" x1="80" y1="80" x2="80" y2="26" stroke="var(--rise)" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+          <circle id="riseDot" cx="80" cy="26" r="4" fill="var(--rise)" opacity="0.85"/>
+          <!-- 월몰 방향 바늘 (주황) -->
+          <line id="setNeedle" x1="80" y1="80" x2="80" y2="26" stroke="var(--set)" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+          <circle id="setDot" cx="80" cy="26" r="4" fill="var(--set)" opacity="0.85"/>
+          <!-- 현재 달 방향 바늘 (골드, 가장 위) -->
+          <line id="nowNeedle" x1="80" y1="80" x2="80" y2="22" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
+          <circle id="nowDot" cx="80" cy="22" r="5" fill="var(--accent)"/>
+          <!-- 중심 -->
+          <circle cx="80" cy="80" r="4" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1"/>
+        </svg>
+      </div>
+      <div class="compass-info">
+        <div class="cinfo-row">
+          <span class="cinfo-label">🟡 현재 달</span>
+          <span class="cinfo-val now-col" id="cNow">—</span>
+        </div>
+        <div class="cinfo-row">
+          <span class="cinfo-label">🟢 월출 방위</span>
+          <span class="cinfo-val rise-col" id="cRise">—</span>
+        </div>
+        <div class="cinfo-row">
+          <span class="cinfo-label">🟠 월몰 방위</span>
+          <span class="cinfo-val set-col" id="cSet">—</span>
+        </div>
+        <div class="cinfo-row">
+          <span class="cinfo-label">현재 고도</span>
+          <span class="cinfo-val" id="cAlt">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span id="footerLoc">현재 위치 기반</span> · 천문 계산: ELP2000 축약 알고리즘<br>
+    1분마다 자동 갱신 · 오차 ±5분 이내
+
+  <!-- 위치 입력 모달 -->
+  <div class="loc-overlay" id="locOverlay">
+    <div class="loc-modal">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <h2 style="margin:0;">📍 위치 설정</h2>
+        <button onclick="retryGeo()" style="background:var(--accent2);border:none;color:#fff;font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:var(--font-sans);">🛰 GPS 재요청</button>
+      </div>
+      <p style="margin-bottom:10px;">지도를 탭하거나 좌표를 직접 입력하세요.<br><span style="color:var(--accent2);">GPS가 허용된 환경에서는 자동 적용됩니다.</span></p>
+
+      <!-- 미니맵 (Canvas) -->
+      <div id="miniMap" onclick="onMapClick(event)" ontouchend="onMapTouch(event)">
+        <canvas id="mapCanvas"></canvas>
+        <div class="map-tap-hint">탭하면 해당 위치로 이동 · 드래그로 이동</div>
+      </div>
+
+      <div class="loc-input-row">
+        <div style="flex:1">
+          <label>위도 (Latitude)</label>
+          <input type="number" id="inputLat" step="0.0001" min="-90" max="90" placeholder="35.8373"
+            oninput="onCoordInput()">
+        </div>
+        <div style="flex:1">
+          <label>경도 (Longitude)</label>
+          <input type="number" id="inputLng" step="0.0001" min="-180" max="180" placeholder="127.0495"
+            oninput="onCoordInput()">
+        </div>
+      </div>
+      <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">
+        예: 서울 37.5665 / 126.9780 &nbsp;·&nbsp; 부산 35.1796 / 129.0756
+      </div>
+      <div class="loc-btn-row">
+        <button class="loc-btn secondary" onclick="closeLocModal()">취소</button>
+        <button class="loc-btn primary" onclick="applyManualLoc()">✓ 적용</button>
+      </div>
+    </div>
+  </div>
+
+  </footer>
+
+</div>
+
+<script>
+let LAT = 35.8373, LNG = 127.0495; // 기본값(전주), GPS로 갱신됨
+let locationReady = false;
+let locationName  = '위치 확인 중…';
+const DEG = Math.PI / 180;
+const sinD=d=>Math.sin(d*DEG), cosD=d=>Math.cos(d*DEG), tanD=d=>Math.tan(d*DEG);
+const asinD=x=>Math.asin(Math.max(-1,Math.min(1,x)))/DEG;
+const atan2D=(y,x)=>Math.atan2(y,x)/DEG;
+const norm360=d=>((d%360)+360)%360;
+const toRad=d=>d*DEG;
+
+function jdFromDate(date){
+  const y=date.getUTCFullYear(),m=date.getUTCMonth()+1,d=date.getUTCDate();
+  const ut=date.getUTCHours()+date.getUTCMinutes()/60+date.getUTCSeconds()/3600;
+  let Y=y,M=m; if(M<=2){Y--;M+=12;}
+  const A=Math.floor(Y/100), B=2-A+Math.floor(A/4);
+  return Math.floor(365.25*(Y+4716))+Math.floor(30.6001*(M+1))+d+ut/24+B-1524.5;
+}
+
+function moonPosition(jd){
+  const T=(jd-2451545)/36525;
+  const Lp=norm360(218.3164477+481267.88123421*T);
+  const D=norm360(297.8501921+445267.1114034*T);
+  const M=norm360(357.5291092+35999.0502909*T);
+  const Mp=norm360(134.9633964+477198.8675055*T);
+  const F=norm360(93.2720950+483202.0175233*T);
+  const lon=Lp+6.288774*sinD(Mp)+1.274027*sinD(2*D-Mp)+0.658314*sinD(2*D)
+    +0.213618*sinD(2*Mp)-0.185116*sinD(M)-0.114332*sinD(2*F)
+    +0.058793*sinD(2*D-2*Mp)+0.057066*sinD(2*D-M-Mp)+0.053322*sinD(2*D+Mp)
+    +0.045758*sinD(2*D-M)-0.040923*sinD(M-Mp)-0.034720*sinD(D)
+    -0.030383*sinD(M+Mp)+0.015327*sinD(2*D-2*F)-0.012528*sinD(Mp+2*F)+0.010980*sinD(Mp-2*F);
+  const lat=5.128122*sinD(F)+0.280602*sinD(Mp+F)+0.277693*sinD(Mp-F)
+    +0.173237*sinD(2*D-F)+0.055413*sinD(2*D+F-Mp)+0.046271*sinD(2*D-F-Mp)
+    +0.032573*sinD(2*D+F)+0.017198*sinD(2*Mp+F)+0.009267*sinD(2*D+Mp-F)
+    +0.008823*sinD(2*Mp-F)-0.008247*sinD(2*D-M-F)+0.004323*sinD(2*D-F-2*Mp)
+    +0.004200*sinD(2*D+F+Mp);
+  const dist=385000.56-20905.355*cosD(Mp)-3699.111*cosD(2*D-Mp)-2955.968*cosD(2*D)
+    -569.925*cosD(2*Mp)+48.888*cosD(M)-3.149*cosD(2*F)+246.158*cosD(2*D-2*Mp)
+    -152.138*cosD(2*D-M-Mp)-170.733*cosD(2*D+Mp)-204.586*cosD(2*D-M)
+    -129.620*cosD(M-Mp)+108.743*cosD(D);
+  return {lon:norm360(lon),lat,dist};
+}
+
+function eclToEquat(lon,lat,jd){
+  const T=(jd-2451545)/36525;
+  const eps=23.439291111-0.013004167*T;
+  const x=cosD(lon)*cosD(lat);
+  const y=cosD(eps)*sinD(lon)*cosD(lat)-sinD(eps)*sinD(lat);
+  const z=sinD(eps)*sinD(lon)*cosD(lat)+cosD(eps)*sinD(lat);
+  return {ra:norm360(atan2D(y,x)), dec:asinD(z)};
+}
+
+function lstDeg(jd,lng){
+  const T=(jd-2451545)/36525;
+  let gst=280.46061837+360.98564736629*(jd-2451545)+0.000387933*T*T;
+  return norm360(gst+lng);
+}
+
+function altAz(ra,dec,lst,lat){
+  const ha=norm360(lst-ra);
+  const sinAlt=sinD(lat)*sinD(dec)+cosD(lat)*cosD(dec)*cosD(ha);
+  const alt=asinD(sinAlt);
+  const cosAz=(sinD(dec)-sinD(lat)*sinAlt)/(cosD(lat)*Math.cos(toRad(alt)));
+  let az=Math.acos(Math.max(-1,Math.min(1,cosAz)))/DEG;
+  if(sinD(ha)>0) az=360-az;
+  return {alt,az};
+}
+
+function phaseInfo(jd){
+  const moonLon=moonPosition(jd).lon;
+  const T=(jd-2451545)/36525;
+  const sunL=norm360(280.46646+36000.76983*T);
+  const sunM=norm360(357.52911+35999.05029*T);
+  const sunLon=norm360(sunL+1.914602*sinD(sunM)+0.019993*sinD(2*sunM));
+  const angle=norm360(moonLon-sunLon);
+  const pct=(1-Math.cos(toRad(angle)))/2;
+  return {angle,pct};
+}
+
+function phaseName(a){
+  if(a<22.5)   return {name:'삭 (신월)',      emoji:'🌑'};
+  if(a<67.5)   return {name:'초승달',         emoji:'🌒'};
+  if(a<112.5)  return {name:'상현달',         emoji:'🌓'};
+  if(a<157.5)  return {name:'상현망 사이',    emoji:'🌔'};
+  if(a<202.5)  return {name:'망 (보름달)',    emoji:'🌕'};
+  if(a<247.5)  return {name:'하현망 사이',    emoji:'🌖'};
+  if(a<292.5)  return {name:'하현달',         emoji:'🌗'};
+  if(a<337.5)  return {name:'그믐달',         emoji:'🌘'};
+  return {name:'삭 (신월)',emoji:'🌑'};
+}
+
+function dirLabel(az){
+  const dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  return dirs[Math.round(az/22.5)%16];
+}
+
+function drawMoonPhase(angle){
+  const g=document.getElementById('moonPhaseG');
+  g.innerHTML='';
+  const ns='http://www.w3.org/2000/svg';
+  const cx=44,cy=44,r=38;
+  if(angle<5||Math.abs(angle-360)<5) return;
+  if(angle>355) return;
+  const path=document.createElementNS(ns,'path');
+  let d;
+  if(angle<=180){
+    const k=Math.cos(toRad(angle));
+    const rx=Math.abs(k*r);
+    d=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${rx} ${r} 0 0 ${k>0?0:1} ${cx} ${cy-r} Z`;
+  } else {
+    const k=Math.cos(toRad(angle));
+    const rx=Math.abs(k*r);
+    d=`M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} A ${rx} ${r} 0 0 ${k>0?1:0} ${cx} ${cy-r} Z`;
+  }
+  path.setAttribute('d',d);
+  path.setAttribute('fill','#c9a84c');
+  path.setAttribute('opacity','0.85');
+  g.appendChild(path);
+}
+
+function jdToKST(jd){
+  if(!jd) return null;
+  const kst=9*3600000;
+  const ms=(jd-2440587.5)*86400000+kst;
+  const d=new Date(ms);
+  return d.getUTCHours().toString().padStart(2,'0')+':'+d.getUTCMinutes().toString().padStart(2,'0');
+}
+
+function timeToMin(s){
+  if(!s) return null;
+  const p=s.split(':'); return parseInt(p[0])*60+parseInt(p[1]);
+}
+
+function drawArc(alts){
+  const svg=document.getElementById('arcSvg');
+  svg.innerHTML='';
+  const ns='http://www.w3.org/2000/svg';
+  const W=600,H=150,pad={l:36,r:12,t:16,b:24};
+  const maxAlt=Math.max(...alts,5);
+  const minAlt=Math.min(...alts,-5);
+  const range=maxAlt-minAlt;
+  const scX=i=>(pad.l+(i/23)*(W-pad.l-pad.r));
+  const scY=v=>(pad.t+(H-pad.t-pad.b)*(1-(v-minAlt)/range));
+  const zeroY=scY(0);
+
+  // grid line at 0
+  const zl=document.createElementNS(ns,'line');
+  zl.setAttribute('x1',pad.l); zl.setAttribute('x2',W-pad.r);
+  zl.setAttribute('y1',zeroY); zl.setAttribute('y2',zeroY);
+  zl.setAttribute('stroke','rgba(255,255,255,0.1)'); zl.setAttribute('stroke-width','0.8');
+  zl.setAttribute('stroke-dasharray','4 4');
+  svg.appendChild(zl);
+
+  // fill area
+  let areaD='M '+scX(0)+' '+scY(alts[0]);
+  for(let i=1;i<alts.length;i++) areaD+=' L '+scX(i)+' '+scY(alts[i]);
+  areaD+=' L '+scX(alts.length-1)+' '+(H-pad.b)+' L '+pad.l+' '+(H-pad.b)+' Z';
+  const area=document.createElementNS(ns,'path');
+  area.setAttribute('d',areaD);
+  area.setAttribute('fill','rgba(74,127,193,0.15)');
+  svg.appendChild(area);
+
+  // line
+  let lineD='M '+scX(0)+' '+scY(alts[0]);
+  for(let i=1;i<alts.length;i++) lineD+=' L '+scX(i)+' '+scY(alts[i]);
+  const line=document.createElementNS(ns,'path');
+  line.setAttribute('d',lineD);
+  line.setAttribute('fill','none');
+  line.setAttribute('stroke','#4a7fc1');
+  line.setAttribute('stroke-width','1.8');
+  line.setAttribute('stroke-linejoin','round');
+  svg.appendChild(line);
+
+  // x-axis labels
+  [0,6,12,18,23].forEach(i=>{
+    const txt=document.createElementNS(ns,'text');
+    txt.setAttribute('x',scX(i)); txt.setAttribute('y',H-4);
+    txt.setAttribute('text-anchor','middle');
+    txt.setAttribute('font-size','10');
+    txt.setAttribute('fill','rgba(122,128,154,0.9)');
+    txt.setAttribute('font-family','Noto Sans KR, sans-serif');
+    txt.textContent=String(i).padStart(2,'0')+':00';
+    svg.appendChild(txt);
+  });
+
+  // y-axis label
+  const maxLabel=document.createElementNS(ns,'text');
+  maxLabel.setAttribute('x',pad.l-4); maxLabel.setAttribute('y',scY(maxAlt)+4);
+  maxLabel.setAttribute('text-anchor','end'); maxLabel.setAttribute('font-size','9');
+  maxLabel.setAttribute('fill','rgba(122,128,154,0.8)');
+  maxLabel.setAttribute('font-family','Noto Sans KR, sans-serif');
+  maxLabel.textContent=maxAlt.toFixed(0)+'°';
+  svg.appendChild(maxLabel);
+
+  const zeroLabel=document.createElementNS(ns,'text');
+  zeroLabel.setAttribute('x',pad.l-4); zeroLabel.setAttribute('y',zeroY+4);
+  zeroLabel.setAttribute('text-anchor','end'); zeroLabel.setAttribute('font-size','9');
+  zeroLabel.setAttribute('fill','rgba(122,128,154,0.8)');
+  zeroLabel.setAttribute('font-family','Noto Sans KR, sans-serif');
+  zeroLabel.textContent='0°';
+  svg.appendChild(zeroLabel);
+}
+
+function initCompassTicks(){
+  const ns='http://www.w3.org/2000/svg';
+  const g=document.getElementById('compassTicks');
+  if(!g||g.children.length>0) return;
+  for(let i=0;i<36;i++){
+    const angle=i*10;
+    const rad=angle*DEG;
+    const isMajor=(i%9===0);
+    const inner=isMajor?60:65;
+    const outer=72;
+    const x1=80+inner*Math.sin(rad), y1=80-inner*Math.cos(rad);
+    const x2=80+outer*Math.sin(rad), y2=80-outer*Math.cos(rad);
+    const line=document.createElementNS(ns,'line');
+    line.setAttribute('x1',x1.toFixed(2)); line.setAttribute('y1',y1.toFixed(2));
+    line.setAttribute('x2',x2.toFixed(2)); line.setAttribute('y2',y2.toFixed(2));
+    line.setAttribute('stroke', isMajor?'rgba(255,255,255,0.25)':'rgba(255,255,255,0.1)');
+    line.setAttribute('stroke-width', isMajor?'1':'0.5');
+    g.appendChild(line);
+  }
+}
+
+function setNeedle(lineId, dotId, azDeg, r){
+  const rad=azDeg*DEG;
+  const x2=(80+r*Math.sin(rad)).toFixed(2);
+  const y2=(80-r*Math.cos(rad)).toFixed(2);
+  const line=document.getElementById(lineId);
+  const dot=document.getElementById(dotId);
+  if(line){ line.setAttribute('x2',x2); line.setAttribute('y2',y2); }
+  if(dot){ dot.setAttribute('cx',x2); dot.setAttribute('cy',y2); }
+}
+
+function updateCompass(nowAz, nowAlt, riseAz, setAz){
+  initCompassTicks();
+  setNeedle('nowNeedle','nowDot',nowAz,50);
+  if(riseAz!==null) setNeedle('riseNeedle','riseDot',riseAz,44);
+  if(setAz!==null)  setNeedle('setNeedle','setDot',setAz,44);
+
+  const fmt=az=>`${Math.round(az)}° ${dirLabel(az)}`;
+  document.getElementById('cNow').textContent=fmt(nowAz);
+  document.getElementById('cRise').textContent=riseAz!==null?fmt(riseAz):'—';
+  document.getElementById('cSet').textContent=setAz!==null?fmt(setAz):'—';
+  document.getElementById('cAlt').textContent=(nowAlt>=0?'+':'')+nowAlt.toFixed(1)+'°';
+}
+
+function run(){
+  const now=new Date();
+  const kst=9*3600000;
+  const kstNow=new Date(now.getTime()+kst);
+  const jdNow=jdFromDate(now);
+
+  // current position
+  const moon=moonPosition(jdNow);
+  const eq=eclToEquat(moon.lon,moon.lat,jdNow);
+  const lst=lstDeg(jdNow,LNG);
+  const pos=altAz(eq.ra,eq.dec,lst,LAT);
+
+  const phase=phaseInfo(jdNow);
+  const pname=phaseName(phase.angle);
+
+  // clock
+  document.getElementById('clockEl').textContent=
+    kstNow.getUTCHours().toString().padStart(2,'0')+':'+
+    kstNow.getUTCMinutes().toString().padStart(2,'0')+':'+
+    kstNow.getUTCSeconds().toString().padStart(2,'0');
+  document.getElementById('dateEl').textContent=
+    kstNow.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+
+  document.getElementById('phaseNameEl').textContent=pname.emoji+' '+pname.name;
+  document.getElementById('phasePctEl').textContent='조도 '+Math.round(phase.pct*100)+'%';
+  document.getElementById('phasePctSvg').textContent=Math.round(phase.pct*100)+'%';
+  drawMoonPhase(phase.angle);
+
+  const above=pos.alt>0;
+  const badge=document.getElementById('horizonBadge');
+  const dot=document.getElementById('badgeDot');
+  dot.style.background=above?'#4a9e6b':'#7a809a';
+  document.getElementById('horizonText').textContent=above?'지평선 위':'지평선 아래';
+
+  document.getElementById('curAltEl').textContent=(pos.alt>=0?'+':'')+pos.alt.toFixed(1)+'°';
+  document.getElementById('curAzEl').textContent=pos.az.toFixed(1)+'° '+dirLabel(pos.az);
+  document.getElementById('curDistEl').textContent=Math.round(moon.dist).toLocaleString('ko-KR')+'km';
+
+  // midnight KST
+  const kstMidnight=new Date(Date.UTC(kstNow.getUTCFullYear(),kstNow.getUTCMonth(),kstNow.getUTCDate(),-9,0,0));
+  const jdMid=jdFromDate(kstMidnight);
+
+  let riseJD=null,setJD=null,transitJD=null,transitEl2=null;
+  const alts=[];
+  for(let i=0;i<24;i++){
+    const jd=jdMid+i/24;
+    const m2=moonPosition(jd), e2=eclToEquat(m2.lon,m2.lat,jd);
+    const l2=lstDeg(jd,LNG), p2=altAz(e2.ra,e2.dec,l2,LAT);
+    alts.push(p2.alt);
+  }
+  drawArc(alts);
+
+  for(let i=0;i<1440;i++){
+    const jd=jdMid+i/1440;
+    const m2=moonPosition(jd), e2=eclToEquat(m2.lon,m2.lat,jd);
+    const l2=lstDeg(jd,LNG), p2=altAz(e2.ra,e2.dec,l2,LAT);
+    const jdP=jd-1/1440;
+    const mP=moonPosition(jdP), eP=eclToEquat(mP.lon,mP.lat,jdP);
+    const lP=lstDeg(jdP,LNG), pP=altAz(eP.ra,eP.dec,lP,LAT);
+    if(riseJD===null && p2.alt>-0.5 && pP.alt<=-0.5) riseJD=jd;
+    if(setJD===null && riseJD!==null && p2.alt<-0.5 && pP.alt>=-0.5) setJD=jd;
+    if(transitEl2===null||p2.alt>transitEl2){transitEl2=p2.alt;transitJD=jd;}
+  }
+
+  const rT=jdToKST(riseJD), sT=jdToKST(setJD), trT=jdToKST(transitJD);
+  document.getElementById('riseVal').textContent=rT||'—';
+  document.getElementById('setVal').textContent=sT||'—';
+  document.getElementById('transitVal').textContent=trT||'—';
+  if(transitEl2!==null) document.getElementById('transitElEl').textContent='고도 '+transitEl2.toFixed(1)+'°';
+
+  if(riseJD){
+    const mR=moonPosition(riseJD), eR=eclToEquat(mR.lon,mR.lat,riseJD);
+    const lR=lstDeg(riseJD,LNG), pR=altAz(eR.ra,eR.dec,lR,LAT);
+    document.getElementById('riseAzEl').textContent='방위 '+Math.round(pR.az)+'° '+dirLabel(pR.az);
+  }
+  if(setJD){
+    const mS=moonPosition(setJD), eS=eclToEquat(mS.lon,mS.lat,setJD);
+    const lS=lstDeg(setJD,LNG), pS=altAz(eS.ra,eS.dec,lS,LAT);
+    document.getElementById('setAzEl').textContent='방위 '+Math.round(pS.az)+'° '+dirLabel(pS.az);
+  }
+
+  // timeline
+  const rMin=timeToMin(rT), sMin=timeToMin(sT);
+  const nowMin=kstNow.getUTCHours()*60+kstNow.getUTCMinutes();
+  const nowPct=nowMin/(24*60);
+  document.getElementById('tlNow').style.left=(nowPct*100)+'%';
+  const fill=document.getElementById('tlFill');
+  if(rMin!==null && sMin!==null && sMin>rMin){
+    fill.style.left=(rMin/(24*60)*100)+'%';
+    fill.style.width=((sMin-rMin)/(24*60)*100)+'%';
+    fill.style.display='block';
+  } else { fill.style.display='none'; }
+
+  const evContainer=document.getElementById('tlEvents');
+  evContainer.innerHTML='';
+  [[rT,'월출','rise'],[trT,'남중','transit'],[sT,'월몰','set']].forEach(([t,label,cls])=>{
+    if(t){
+      const div=document.createElement('div');
+      div.className='tl-ev '+cls;
+      div.innerHTML=label+' <span>'+t+'</span>';
+      evContainer.appendChild(div);
+    }
+  });
+
+  // badges
+  const br=document.getElementById('badgesRow');
+  br.innerHTML='';
+  const distKm=Math.round(moon.dist).toLocaleString('ko-KR');
+  const distStatus=moon.dist<362000?'슈퍼문':moon.dist>405000?'마이크로문':'평균 거리';
+  const pills=[
+    {text:above?'지평선 위':'지평선 아래', active:above},
+    {text:distStatus+' · '+distKm+'km', active:true, color:moon.dist<362000?'var(--accent)':moon.dist>405000?'var(--muted)':'var(--accent2)'},
+  ];
+  pills.forEach(p=>{
+    const s=document.createElement('span');
+    s.className='pill'+(p.active?' active':'');
+    if(p.color) s.style.color=p.color, s.style.borderColor=p.color;
+    s.textContent=p.text;
+    br.appendChild(s);
+  });
+
+  // next event note
+  const note=document.getElementById('extraNote');
+  if(above && setJD){
+    const diff=(setJD-jdNow)*24;
+    note.textContent='월몰까지 약 '+Math.floor(diff)+'시간 '+Math.round((diff%1)*60)+'분';
+  } else if(!above && riseJD){
+    const diff=(riseJD-jdNow)*24;
+    note.textContent=diff>0?'월출까지 약 '+Math.floor(diff)+'시간 '+Math.round((diff%1)*60)+'분':'다음 월출은 내일';
+  } else { note.textContent='—'; }
+
+  // next event for hero
+  document.getElementById('nextEventEl').textContent=note.textContent;
+
+  // compass
+  let riseAzVal=null, setAzVal=null;
+  if(riseJD){
+    const mR=moonPosition(riseJD), eR=eclToEquat(mR.lon,mR.lat,riseJD);
+    const lR=lstDeg(riseJD,LNG), pR=altAz(eR.ra,eR.dec,lR,LAT);
+    riseAzVal=pR.az;
+  }
+  if(setJD){
+    const mS=moonPosition(setJD), eS=eclToEquat(mS.lon,mS.lat,setJD);
+    const lS=lstDeg(setJD,LNG), pS=altAz(eS.ra,eS.dec,lS,LAT);
+    setAzVal=pS.az;
+  }
+  updateCompass(pos.az, pos.alt, riseAzVal, setAzVal);
+}
+
+// clock ticks every second
+setInterval(()=>{
+  const now=new Date();
+  const kst=9*3600000;
+  const kstNow=new Date(now.getTime()+kst);
+  document.getElementById('clockEl').textContent=
+    kstNow.getUTCHours().toString().padStart(2,'0')+':'+
+    kstNow.getUTCMinutes().toString().padStart(2,'0')+':'+
+    kstNow.getUTCSeconds().toString().padStart(2,'0');
+},1000);
+
+
+// ── 홈 화면 아이콘 동적 생성 ──────────────────────────────
+function generateIcon() {
+  const size = 180;
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const ctx = c.getContext('2d');
+
+  // 배경 (둥근 사각형)
+  const r = size * 0.22;
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(size - r, 0);
+  ctx.quadraticCurveTo(size, 0, size, r);
+  ctx.lineTo(size, size - r);
+  ctx.quadraticCurveTo(size, size, size - r, size);
+  ctx.lineTo(r, size);
+  ctx.quadraticCurveTo(0, size, 0, size - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+
+  // 배경 그라데이션
+  const grad = ctx.createLinearGradient(0, 0, size, size);
+  grad.addColorStop(0, '#0e1220');
+  grad.addColorStop(1, '#1a2035');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // 별 장식
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  [[28,30,1.2],[140,22,0.9],[158,70,1.0],[18,110,0.8],[155,140,1.1],[60,18,0.7]].forEach(([x,y,s])=>{
+    ctx.beginPath(); ctx.arc(x,y,s,0,Math.PI*2); ctx.fill();
+  });
+
+  // 현재 위상 계산
+  const jd = jdFromDate(new Date());
+  const ph = phaseInfo(jd);
+  const angle = ph.angle;
+
+  // 달 본체
+  const mx = size / 2, my = size / 2 - 4, mr = 52;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(mx, my, mr, 0, Math.PI * 2);
+  ctx.clip();
+
+  // 어두운 면
+  ctx.fillStyle = '#1e2535';
+  ctx.fillRect(mx - mr, my - mr, mr * 2, mr * 2);
+
+  // 밝은 면 (위상에 따라)
+  if (angle > 5 && angle < 355) {
+    ctx.fillStyle = '#e8c96a';
+    const toRad = d => d * Math.PI / 180;
+    const k = Math.cos(toRad(angle));
+    const rx = Math.abs(k * mr);
+    ctx.beginPath();
+    if (angle <= 180) {
+      ctx.arc(mx, my, mr, -Math.PI/2, Math.PI/2);
+      ctx.ellipse(mx, my, rx, mr, 0, Math.PI/2, -Math.PI/2, k > 0);
+    } else {
+      ctx.arc(mx, my, mr, Math.PI/2, -Math.PI/2);
+      ctx.ellipse(mx, my, rx, mr, 0, -Math.PI/2, Math.PI/2, k <= 0);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+
+  // 달 테두리
+  ctx.beginPath();
+  ctx.arc(mx, my, mr, 0, Math.PI*2);
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // 텍스트 "달력"
+  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  ctx.font = 'bold 22px "Noto Sans KR", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('달력', size / 2, size - 18);
+
+  const dataURL = c.toDataURL('image/png');
+  document.getElementById('appleIcon').href = dataURL;
+  document.getElementById('favicon').href   = dataURL;
+}
+
+generateIcon();
+
+// ── Geolocation 위치 감지 ────────────────────────────────
+function degToStr(deg, isLat) {
+  const abs = Math.abs(deg);
+  const d = Math.floor(abs);
+  const mAll = (abs - d) * 60;
+  const m = Math.floor(mAll);
+  const s = ((mAll - m) * 60).toFixed(1);
+  const dir = isLat ? (deg >= 0 ? 'N' : 'S') : (deg >= 0 ? 'E' : 'W');
+  return d + '°' + m + '′' + s + '″' + dir;
+}
+
+function reverseGeocode(lat, lng) {
+  fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=ko`)
+    .then(r => r.json())
+    .then(data => {
+      const addr = data.address || {};
+      locationName = addr.city || addr.town || addr.village || addr.county || addr.state || '현재 위치';
+      const coordStr = degToStr(lat, true) + ' ' + degToStr(lng, false);
+      document.getElementById('locLabel').textContent  = coordStr + ' · ' + locationName + ' KST';
+      document.getElementById('footerLoc').textContent = locationName + ' · ' + coordStr;
+    })
+    .catch(() => {
+      const coordStr = degToStr(lat, true) + ' ' + degToStr(lng, false);
+      document.getElementById('locLabel').textContent  = coordStr + ' KST';
+      document.getElementById('footerLoc').textContent = coordStr;
+    });
+}
+
+function onGeoSuccess(pos) {
+  LAT = pos.coords.latitude;
+  LNG = pos.coords.longitude;
+  locationReady = true;
+  closeLocModal();
+  reverseGeocode(LAT, LNG);
+  run();
+  generateIcon();
+}
+
+function onGeoError(err) {
+  console.warn('위치 오류:', err.message);
+  locationReady = true;
+  // 기본값으로 일단 표시
+  document.getElementById('locLabel').textContent = '전주 KST (기본값)';
+  document.getElementById('footerLoc').textContent = '기본 좌표 (전주)';
+  run();
+  generateIcon();
+  // 수동 입력 모달 표시
+  openLocModal();
+}
+
+// ── Canvas 미니맵 ────────────────────────────────────────────────
+let mapTileLat = 35.8373, mapTileLng = 127.0495, mapZoom = 11;
+let mapTiles = {}, mapDrag = null, mapCoordInputTimer = null;
+
+// 위도/경도 → 타일 번호
+function latLngToTile(lat, lng, z) {
+  const n = Math.pow(2, z);
+  const x = Math.floor((lng + 180) / 360 * n);
+  const latR = lat * Math.PI / 180;
+  const y = Math.floor((1 - Math.log(Math.tan(latR) + 1 / Math.cos(latR)) / Math.PI) / 2 * n);
+  return { x, y };
+}
+
+// 타일 → 픽셀 오프셋 (캔버스 기준)
+function tileToPixel(tx, ty, cx, cy, z, cLat, cLng) {
+  const n = Math.pow(2, z);
+  const cTileX = (cLng + 180) / 360 * n;
+  const cLatR  = cLat * Math.PI / 180;
+  const cTileY = (1 - Math.log(Math.tan(cLatR) + 1 / Math.cos(cLatR)) / Math.PI) / 2 * n;
+  return {
+    px: Math.round((tx - cTileX) * 256 + cx),
+    py: Math.round((ty - cTileY) * 256 + cy)
+  };
+}
+
+// 픽셀 → 위도/경도
+function pixelToLatLng(px, py, cx, cy, z, cLat, cLng) {
+  const n = Math.pow(2, z);
+  const cTileX = (cLng + 180) / 360 * n;
+  const cLatR  = cLat * Math.PI / 180;
+  const cTileY = (1 - Math.log(Math.tan(cLatR) + 1 / Math.cos(cLatR)) / Math.PI) / 2 * n;
+  const tileX  = (px - cx) / 256 + cTileX;
+  const tileY  = (py - cy) / 256 + cTileY;
+  const lng    = tileX / n * 360 - 180;
+  const latRad = Math.atan(Math.sinh(Math.PI * (1 - 2 * tileY / n)));
+  return { lat: latRad * 180 / Math.PI, lng };
+}
+
+function getTile(x, y, z, canvas) {
+  const key = `${z}/${x}/${y}`;
+  if (mapTiles[key] && mapTiles[key].complete) {
+    return mapTiles[key];
+  }
+  if (!mapTiles[key]) {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    // OSM tile servers (a/b/c 서브도메인 순환)
+    const sub = ['a','b','c'][((x + y) % 3 + 3) % 3];
+    img.src = `https://${sub}.tile.openstreetmap.org/${z}/${x}/${y}.png`;
+    img.onload  = () => drawMap();
+    img.onerror = () => { mapTiles[key] = null; };
+    mapTiles[key] = img;
+  }
+  return null;
+}
+
+function drawMap() {
+  const wrap = document.getElementById('miniMap');
+  if (!wrap) return;
+  const canvas = document.getElementById('mapCanvas');
+  if (!canvas) return;
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // 배경
+  ctx.fillStyle = '#1a2b3c';
+  ctx.fillRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2;
+  const z = mapZoom;
+  const cTile = latLngToTile(mapTileLat, mapTileLng, z);
+
+  // 타일 범위 계산
+  const tilesX = Math.ceil(W / 256) + 2;
+  const tilesY = Math.ceil(H / 256) + 2;
+
+  for (let dx = -tilesX; dx <= tilesX; dx++) {
+    for (let dy = -tilesY; dy <= tilesY; dy++) {
+      const tx = cTile.x + dx, ty = cTile.y + dy;
+      if (ty < 0 || ty >= Math.pow(2, z)) continue;
+      const px = tileToPixel(tx, ty, cx, cy, z, mapTileLat, mapTileLng);
+      const img = getTile(tx, ty, z, canvas);
+      if (img) {
+        ctx.drawImage(img, px.px, px.py, 256, 256);
+      } else {
+        ctx.fillStyle = '#1e2d3e';
+        ctx.fillRect(px.px, px.py, 255, 255);
+      }
+    }
+  }
+
+  // 다크 오버레이 (지도를 어둡게)
+  ctx.fillStyle = 'rgba(10,16,30,0.38)';
+  ctx.fillRect(0, 0, W, H);
+
+  // 십자선
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+
+  // 핀 마커
+  const mx = cx, my = cy;
+  // 그림자
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.shadowBlur = 8;
+  // 핀 원
+  ctx.beginPath();
+  ctx.arc(mx, my - 14, 10, 0, Math.PI * 2);
+  ctx.fillStyle = '#e8533a';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  // 핀 꼬리
+  ctx.beginPath();
+  ctx.moveTo(mx - 4, my - 6);
+  ctx.quadraticCurveTo(mx, my + 2, mx, my);
+  ctx.quadraticCurveTo(mx, my + 2, mx + 4, my - 6);
+  ctx.fillStyle = '#e8533a';
+  ctx.fill();
+  ctx.restore();
+  // 핀 내부 흰 점
+  ctx.beginPath();
+  ctx.arc(mx, my - 14, 4, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.fill();
+
+  // 좌표 레이블
+  const lat = mapTileLat.toFixed(4), lng = mapTileLng.toFixed(4);
+  const label = `${lat}°N  ${lng}°E`;
+  ctx.font = '11px "Noto Sans KR", sans-serif';
+  const tw = ctx.measureText(label).width;
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.beginPath();
+  ctx.roundRect(cx - tw/2 - 7, my + 6, tw + 14, 20, 4);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, cx, my + 16);
+
+  // 줌 버튼
+  drawZoomBtn(ctx, W - 36, H - 68, '+');
+  drawZoomBtn(ctx, W - 36, H - 36, '−');
+}
+
+function drawZoomBtn(ctx, x, y, label) {
+  ctx.fillStyle = 'rgba(20,28,45,0.85)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.roundRect(x, y, 28, 24, 5);
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#e8e4d9';
+  ctx.font = 'bold 16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, x + 14, y + 12);
+}
+
+function onMapClick(e) {
+  e.preventDefault();
+  const wrap = document.getElementById('miniMap');
+  const canvas = document.getElementById('mapCanvas');
+  const rect = wrap.getBoundingClientRect();
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+  const cx = W / 2, cy = H / 2;
+
+  // 줌 버튼 영역 체크
+  const px = e.clientX - rect.left, py = e.clientY - rect.top;
+  if (px >= W-36 && px <= W-8) {
+    if (py >= H-68 && py <= H-44) { mapZoom = Math.min(18, mapZoom+1); drawMap(); return; }
+    if (py >= H-36 && py <= H-12) { mapZoom = Math.max(3,  mapZoom-1); drawMap(); return; }
+  }
+
+  const ll = pixelToLatLng(px, py, cx, cy, mapZoom, mapTileLat, mapTileLng);
+  mapTileLat = ll.lat; mapTileLng = ll.lng;
+  document.getElementById('inputLat').value = ll.lat.toFixed(4);
+  document.getElementById('inputLng').value = ll.lng.toFixed(4);
+  drawMap();
+}
+
+function onMapTouch(e) {
+  e.preventDefault();
+  if (e.changedTouches.length === 1) {
+    const fakeEvent = {
+      clientX: e.changedTouches[0].clientX,
+      clientY: e.changedTouches[0].clientY,
+      preventDefault: () => {}
+    };
+    onMapClick(fakeEvent);
+  }
+}
+
+function refreshMap(lat, lng) {
+  mapTileLat = lat; mapTileLng = lng;
+  drawMap();
+}
+
+function onCoordInput() {
+  clearTimeout(mapCoordInputTimer);
+  mapCoordInputTimer = setTimeout(() => {
+    const lat = parseFloat(document.getElementById('inputLat').value);
+    const lng = parseFloat(document.getElementById('inputLng').value);
+    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+      refreshMap(lat, lng);
+    }
+  }, 600);
+}
+
+function openLocModal() {
+  document.getElementById('inputLat').value = LAT.toFixed(4);
+  document.getElementById('inputLng').value = LNG.toFixed(4);
+  document.getElementById('locOverlay').classList.add('show');
+  refreshMap(LAT, LNG);
+}
+
+function closeLocModal() {
+  document.getElementById('locOverlay').classList.remove('show');
+}
+
+function applyManualLoc() {
+  const lat = parseFloat(document.getElementById('inputLat').value);
+  const lng = parseFloat(document.getElementById('inputLng').value);
+  if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    alert('올바른 위도/경도를 입력해 주세요.');
+    return;
+  }
+  LAT = lat; LNG = lng;
+  locationReady = true;
+  closeLocModal();
+  reverseGeocode(LAT, LNG);
+  run();
+  generateIcon();
+}
+
+function retryGeo() {
+  closeLocModal();
+  document.getElementById('locLabel').textContent = '위치 확인 중…';
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(onGeoSuccess, err => {
+      onGeoError(err);
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+  } else {
+    openLocModal();
+  }
+}
+
+if ('geolocation' in navigator) {
+  // 먼저 기본값으로 한 번 렌더링 후, 실제 위치 받으면 갱신
+  run();
+  generateIcon();
+  navigator.geolocation.getCurrentPosition(onGeoSuccess, onGeoError, {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 60000
+  });
+} else {
+  locationReady = true;
+  document.getElementById('locLabel').textContent = '35°50′N 127°02′E · 전주 KST (기본값)';
+  run();
+  generateIcon();
+}
+
+setInterval(run, 60000);
+</script>
+</body>
+</html>
