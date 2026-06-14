@@ -367,6 +367,50 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
           <polygon id="moon-headingArrow" points="80,10 74,24 86,24" fill="#4a7fc1"/>
           <line id="moon-headingTail" x1="80" y1="80" x2="80" y2="96" stroke="#4a7fc1" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
         </g>
+        <!-- 앙각(고도) 표시 호 & 벡터 -->
+        <g id="moon-altG">
+          <!-- 앙각 호 (방위각 방향으로 반원 호) -->
+          <path id="moon-altArc" d="" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
+          <!-- 앙각 벡터 화살표 -->
+          <line id="moon-altLine" x1="80" y1="80" x2="80" y2="60" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 2" opacity=".85"/>
+          <polygon id="moon-altArrowHead" points="80,54 76,64 84,64" fill="var(--accent)" opacity=".85"/>
+          <!-- 앙각 수치 레이블 -->
+          <text id="moon-altLabel" x="80" y="80" text-anchor="middle" font-size="8"
+            fill="var(--accent)" font-family="sans-serif" opacity=".9"></text>
+        </g>
+        <!-- 앙각(고도) 표시 호 & 벡터 -->
+        <g id="jupiter-altG">
+          <!-- 앙각 호 (방위각 방향으로 반원 호) -->
+          <path id="jupiter-altArc" d="" fill="none" stroke="var(--jupiter)" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
+          <!-- 앙각 벡터 화살표 -->
+          <line id="jupiter-altLine" x1="80" y1="80" x2="80" y2="60" stroke="var(--jupiter)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 2" opacity=".85"/>
+          <polygon id="jupiter-altArrowHead" points="80,54 76,64 84,64" fill="var(--jupiter)" opacity=".85"/>
+          <!-- 앙각 수치 레이블 -->
+          <text id="jupiter-altLabel" x="80" y="80" text-anchor="middle" font-size="8"
+            fill="var(--jupiter)" font-family="sans-serif" opacity=".9"></text>
+        </g>
+        <!-- 앙각(고도) 표시 호 & 벡터 -->
+        <g id="venus-altG">
+          <!-- 앙각 호 (방위각 방향으로 반원 호) -->
+          <path id="venus-altArc" d="" fill="none" stroke="var(--venus)" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
+          <!-- 앙각 벡터 화살표 -->
+          <line id="venus-altLine" x1="80" y1="80" x2="80" y2="60" stroke="var(--venus)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 2" opacity=".85"/>
+          <polygon id="venus-altArrowHead" points="80,54 76,64 84,64" fill="var(--venus)" opacity=".85"/>
+          <!-- 앙각 수치 레이블 -->
+          <text id="venus-altLabel" x="80" y="80" text-anchor="middle" font-size="8"
+            fill="var(--venus)" font-family="sans-serif" opacity=".9"></text>
+        </g>
+        <!-- 앙각(고도) 표시 호 & 벡터 -->
+        <g id="saturn-altG">
+          <!-- 앙각 호 (방위각 방향으로 반원 호) -->
+          <path id="saturn-altArc" d="" fill="none" stroke="var(--saturn)" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
+          <!-- 앙각 벡터 화살표 -->
+          <line id="saturn-altLine" x1="80" y1="80" x2="80" y2="60" stroke="var(--saturn)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 2" opacity=".85"/>
+          <polygon id="saturn-altArrowHead" points="80,54 76,64 84,64" fill="var(--saturn)" opacity=".85"/>
+          <!-- 앙각 수치 레이블 -->
+          <text id="saturn-altLabel" x="80" y="80" text-anchor="middle" font-size="8"
+            fill="var(--saturn)" font-family="sans-serif" opacity=".9"></text>
+        </g>
         <circle cx="80" cy="80" r="4" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1"/>
       </svg>
       <div class="compass-info">
@@ -374,6 +418,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <div class="cinfo-row"><span class="cinfo-label">🟢 출</span><span class="cinfo-val rise-col" id="moon-cRise">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="moon-cSet">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="moon-cAlt">—</span></div>
+        <div class="cinfo-row"><span class="cinfo-label">🔺 앙각</span><span class="cinfo-val" id="moon-cAltAngle" style="color:rgba(255,255,255,0.7)">—</span></div>
         <div class="heading-row" id="moon-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="moon-headingVal">—</span></div>
       </div>
     </div>
@@ -462,6 +507,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <div class="cinfo-row"><span class="cinfo-label">🟢 출</span><span class="cinfo-val rise-col" id="jupiter-cRise">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="jupiter-cSet">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="jupiter-cAlt">—</span></div>
+        <div class="cinfo-row"><span class="cinfo-label">🔺 앙각</span><span class="cinfo-val" id="jupiter-cAltAngle" style="color:rgba(255,255,255,0.7)">—</span></div>
         <div class="heading-row" id="jupiter-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="jupiter-headingVal">—</span></div>
       </div>
     </div>
@@ -549,6 +595,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <div class="cinfo-row"><span class="cinfo-label">🟢 출</span><span class="cinfo-val rise-col" id="venus-cRise">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="venus-cSet">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="venus-cAlt">—</span></div>
+        <div class="cinfo-row"><span class="cinfo-label">🔺 앙각</span><span class="cinfo-val" id="venus-cAltAngle" style="color:rgba(255,255,255,0.7)">—</span></div>
         <div class="heading-row" id="venus-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="venus-headingVal">—</span></div>
       </div>
     </div>
@@ -636,6 +683,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <div class="cinfo-row"><span class="cinfo-label">🟢 출</span><span class="cinfo-val rise-col" id="saturn-cRise">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="saturn-cSet">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="saturn-cAlt">—</span></div>
+        <div class="cinfo-row"><span class="cinfo-label">🔺 앙각</span><span class="cinfo-val" id="saturn-cAltAngle" style="color:rgba(255,255,255,0.7)">—</span></div>
         <div class="heading-row" id="saturn-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="saturn-headingVal">—</span></div>
       </div>
     </div>
@@ -1323,7 +1371,7 @@ async function toggleHeading(prefix){
   }
 }
 
-function drawCompass(prefix, nowAz, riseAz, setAz, color){
+function drawCompass(prefix, nowAz, riseAz, setAz, color, nowAlt){
   const ns='http://www.w3.org/2000/svg';
   const tg=document.getElementById(prefix+'-compassTicks');
   if(tg && tg.children.length===0){
@@ -1443,7 +1491,7 @@ function runMoon(now, kstNow, jdNow, jdMid, nowMin){
   const moonRiseAlt = riseJD ? (() => { const e=eclToEquat(moonPosition(riseJD).lon, moonPosition(riseJD).lat, riseJD); return altAz(e.ra,e.dec,lstDeg(riseJD,LNG),LAT).alt; })() : null;
   const moonSetAlt  = setJD  ? (() => { const e=eclToEquat(moonPosition(setJD).lon,  moonPosition(setJD).lat,  setJD);  return altAz(e.ra,e.dec,lstDeg(setJD,LNG),LAT).alt; })() : null;
   drawAltimeter('moon', pos.alt, transitEl, moonRiseAlt, moonSetAlt, '#c9a84c');
-  drawCompass('moon',pos.az,riseAzV,setAzV,'#c9a84c');
+  drawCompass('moon',pos.az,riseAzV,setAzV,'#c9a84c',pos.alt);
   document.getElementById('moon-cAlt').textContent=(pos.alt>=0?'+':'')+pos.alt.toFixed(1)+'°';
 
   // 배지
@@ -1503,7 +1551,7 @@ function runPlanet(name, jdNow, jdMid, nowMin){
   const pRiseAlt = riseJD ? altAz(getEq(riseJD).ra, getEq(riseJD).dec, lstDeg(riseJD,LNG), LAT).alt : null;
   const pSetAlt  = setJD  ? altAz(getEq(setJD).ra,  getEq(setJD).dec,  lstDeg(setJD,LNG),  LAT).alt : null;
   drawAltimeter(name, pos.alt, transitEl, pRiseAlt, pSetAlt, color);
-  drawCompass(name,pos.az,rAz,sAz,color);
+  drawCompass(name,pos.az,rAz,sAz,color,pos.alt);
   document.getElementById(name+'-cAlt').textContent=(pos.alt>=0?'+':'')+pos.alt.toFixed(1)+'°';
 
   const br=document.getElementById(name+'-badges');
