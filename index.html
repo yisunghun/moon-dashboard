@@ -240,7 +240,10 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
   </div>
   <div class="arc-card"><div class="arc-title">고도 곡선 (1시간 간격)</div><svg class="arc-svg" viewBox="0 0 600 150" id="moon-arcSvg"></svg></div>
   <div class="compass-card">
-    <div class="compass-title">방위 나침반</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="compass-title" style="margin-bottom:0">방위 나침반</div>
+      <button class="compass-heading-btn" id="moon-headingBtn" onclick="toggleHeading('moon')">🧭 진행방향 켜기</button>
+    </div>
     <div class="compass-layout">
       <svg id="moon-compassSvg" width="150" height="150" viewBox="0 0 160 160">
         <circle cx="80" cy="80" r="72" fill="none" stroke="var(--border2)" stroke-width=".5"/>
@@ -256,6 +259,30 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <circle id="moon-setDot" cx="80" cy="26" r="4" fill="var(--set)" opacity=".85"/>
         <line id="moon-nowNeedle" x1="80" y1="80" x2="80" y2="22" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
         <circle id="moon-nowDot" cx="80" cy="22" r="5" fill="var(--accent)"/>
+        <!-- 진행방향 화살표 (heading) -->
+        <g id="moon-headingG" opacity="0" style="transition:opacity .3s">
+          <line id="moon-headingLine" x1="80" y1="80" x2="80" y2="18" stroke="#4a7fc1" stroke-width="3" stroke-linecap="round"/>
+          <polygon id="moon-headingArrow" points="80,10 74,24 86,24" fill="#4a7fc1"/>
+          <line id="moon-headingTail" x1="80" y1="80" x2="80" y2="96" stroke="#4a7fc1" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+        </g>
+        <!-- 진행방향 화살표 (heading) -->
+        <g id="jupiter-headingG" opacity="0" style="transition:opacity .3s">
+          <line id="jupiter-headingLine" x1="80" y1="80" x2="80" y2="18" stroke="#4a7fc1" stroke-width="3" stroke-linecap="round"/>
+          <polygon id="jupiter-headingArrow" points="80,10 74,24 86,24" fill="#4a7fc1"/>
+          <line id="jupiter-headingTail" x1="80" y1="80" x2="80" y2="96" stroke="#4a7fc1" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+        </g>
+        <!-- 진행방향 화살표 (heading) -->
+        <g id="venus-headingG" opacity="0" style="transition:opacity .3s">
+          <line id="venus-headingLine" x1="80" y1="80" x2="80" y2="18" stroke="#4a7fc1" stroke-width="3" stroke-linecap="round"/>
+          <polygon id="venus-headingArrow" points="80,10 74,24 86,24" fill="#4a7fc1"/>
+          <line id="venus-headingTail" x1="80" y1="80" x2="80" y2="96" stroke="#4a7fc1" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+        </g>
+        <!-- 진행방향 화살표 (heading) -->
+        <g id="saturn-headingG" opacity="0" style="transition:opacity .3s">
+          <line id="saturn-headingLine" x1="80" y1="80" x2="80" y2="18" stroke="#4a7fc1" stroke-width="3" stroke-linecap="round"/>
+          <polygon id="saturn-headingArrow" points="80,10 74,24 86,24" fill="#4a7fc1"/>
+          <line id="saturn-headingTail" x1="80" y1="80" x2="80" y2="96" stroke="#4a7fc1" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+        </g>
         <circle cx="80" cy="80" r="4" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1"/>
       </svg>
       <div class="compass-info">
@@ -263,6 +290,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <div class="cinfo-row"><span class="cinfo-label">🟢 출</span><span class="cinfo-val rise-col" id="moon-cRise">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="moon-cSet">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="moon-cAlt">—</span></div>
+        <div class="heading-row" id="moon-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="moon-headingVal">—</span></div>
       </div>
     </div>
   </div>
@@ -303,7 +331,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="tl-events" id="jupiter-tlEvents"></div>
   </div>
   <div class="arc-card"><div class="arc-title">고도 곡선 (1시간 간격)</div><svg class="arc-svg" viewBox="0 0 600 150" id="jupiter-arcSvg"></svg></div>
-  <div class="compass-card"><div class="compass-title">방위 나침반</div>
+  <div class="compass-card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="compass-title" style="margin-bottom:0">방위 나침반</div><button class="compass-heading-btn" id="jupiter-headingBtn" onclick="toggleHeading('jupiter')">🧭 진행방향 켜기</button></div>
     <div class="compass-layout">
       <svg id="jupiter-compassSvg" width="150" height="150" viewBox="0 0 160 160">
         <circle cx="80" cy="80" r="72" fill="none" stroke="var(--border2)" stroke-width=".5"/>
@@ -326,6 +354,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <div class="cinfo-row"><span class="cinfo-label">🟢 출</span><span class="cinfo-val rise-col" id="jupiter-cRise">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="jupiter-cSet">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="jupiter-cAlt">—</span></div>
+        <div class="heading-row" id="jupiter-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="jupiter-headingVal">—</span></div>
       </div>
     </div>
   </div>
@@ -365,7 +394,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="tl-events" id="venus-tlEvents"></div>
   </div>
   <div class="arc-card"><div class="arc-title">고도 곡선 (1시간 간격)</div><svg class="arc-svg" viewBox="0 0 600 150" id="venus-arcSvg"></svg></div>
-  <div class="compass-card"><div class="compass-title">방위 나침반</div>
+  <div class="compass-card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="compass-title" style="margin-bottom:0">방위 나침반</div><button class="compass-heading-btn" id="venus-headingBtn" onclick="toggleHeading('venus')">🧭 진행방향 켜기</button></div>
     <div class="compass-layout">
       <svg id="venus-compassSvg" width="150" height="150" viewBox="0 0 160 160">
         <circle cx="80" cy="80" r="72" fill="none" stroke="var(--border2)" stroke-width=".5"/>
@@ -388,6 +417,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <div class="cinfo-row"><span class="cinfo-label">🟢 출</span><span class="cinfo-val rise-col" id="venus-cRise">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="venus-cSet">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="venus-cAlt">—</span></div>
+        <div class="heading-row" id="venus-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="venus-headingVal">—</span></div>
       </div>
     </div>
   </div>
@@ -427,7 +457,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="tl-events" id="saturn-tlEvents"></div>
   </div>
   <div class="arc-card"><div class="arc-title">고도 곡선 (1시간 간격)</div><svg class="arc-svg" viewBox="0 0 600 150" id="saturn-arcSvg"></svg></div>
-  <div class="compass-card"><div class="compass-title">방위 나침반</div>
+  <div class="compass-card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="compass-title" style="margin-bottom:0">방위 나침반</div><button class="compass-heading-btn" id="saturn-headingBtn" onclick="toggleHeading('saturn')">🧭 진행방향 켜기</button></div>
     <div class="compass-layout">
       <svg id="saturn-compassSvg" width="150" height="150" viewBox="0 0 160 160">
         <circle cx="80" cy="80" r="72" fill="none" stroke="var(--border2)" stroke-width=".5"/>
@@ -450,6 +480,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <div class="cinfo-row"><span class="cinfo-label">🟢 출</span><span class="cinfo-val rise-col" id="saturn-cRise">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="saturn-cSet">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="saturn-cAlt">—</span></div>
+        <div class="heading-row" id="saturn-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="saturn-headingVal">—</span></div>
       </div>
     </div>
   </div>
@@ -717,6 +748,110 @@ function drawArc(svgId, alts, color){
   mL.textContent=maxAlt.toFixed(0)+'°'; svg.appendChild(mL);
   const zL=mk('text',{x:pad.l-4,y:zeroY+4,'text-anchor':'end','font-size':'9',fill:'rgba(122,128,154,0.8)','font-family':'Noto Sans KR,sans-serif'});
   zL.textContent='0°'; svg.appendChild(zL);
+}
+
+
+// ═══════════════════════════════════════════════════════
+// 진행방향 (Device Orientation / Compass Heading)
+// ═══════════════════════════════════════════════════════
+let currentHeading = null;      // 현재 기기 방향 (도, 0=북)
+let headingActive = {};         // prefix별 활성 상태
+let headingPermissionGranted = false;
+const PREFIXES_ALL = ['moon','jupiter','venus','saturn'];
+
+function updateHeadingNeedles(){
+  PREFIXES_ALL.forEach(p => {
+    if(!headingActive[p]) return;
+    if(currentHeading === null) return;
+    const rad = toRad(currentHeading);
+    const sin = Math.sin(rad), cos = Math.cos(rad);
+    const cx = 80, cy = 80;
+    // 화살표 끝점 (앞)
+    const fx = (cx + 48*sin).toFixed(2), fy = (cy - 48*cos).toFixed(2);
+    // 꼬리 끝점 (뒤)
+    const bx = (cx - 18*sin).toFixed(2), by = (cy + 18*cos).toFixed(2);
+    // 화살머리 세 꼭짓점
+    const hx = (cx + 56*sin).toFixed(2), hy = (cy - 56*cos).toFixed(2);
+    const l1x = (cx + 44*sin - 8*cos).toFixed(2), l1y = (cy - 44*cos - 8*sin).toFixed(2);
+    const r1x = (cx + 44*sin + 8*cos).toFixed(2), r1y = (cy - 44*cos + 8*sin).toFixed(2);
+
+    const line = document.getElementById(p+'-headingLine');
+    const arrow = document.getElementById(p+'-headingArrow');
+    const tail = document.getElementById(p+'-headingTail');
+    if(line){ line.setAttribute('x1',cx); line.setAttribute('y1',cy); line.setAttribute('x2',fx); line.setAttribute('y2',fy); }
+    if(arrow){ arrow.setAttribute('points',`${hx},${hy} ${l1x},${l1y} ${r1x},${r1y}`); }
+    if(tail){ tail.setAttribute('x1',cx); tail.setAttribute('y1',cy); tail.setAttribute('x2',bx); tail.setAttribute('y2',by); }
+
+    const hEl = document.getElementById(p+'-headingVal');
+    if(hEl) hEl.textContent = Math.round(currentHeading) + '° ' + dirLabel(currentHeading);
+  });
+}
+
+function onDeviceOrientation(e){
+  let heading = null;
+  // iOS: webkitCompassHeading (자기 북)
+  if(e.webkitCompassHeading !== undefined && e.webkitCompassHeading !== null){
+    heading = e.webkitCompassHeading;
+  }
+  // Android: alpha (진북 기준, 반대 부호)
+  else if(e.alpha !== null){
+    heading = (360 - e.alpha) % 360;
+  }
+  if(heading !== null){
+    currentHeading = heading;
+    updateHeadingNeedles();
+  }
+}
+
+async function requestOrientationPermission(){
+  // iOS 13+ requires permission
+  if(typeof DeviceOrientationEvent !== 'undefined' &&
+     typeof DeviceOrientationEvent.requestPermission === 'function'){
+    try {
+      const result = await DeviceOrientationEvent.requestPermission();
+      if(result === 'granted'){
+        headingPermissionGranted = true;
+        window.addEventListener('deviceorientationabsolute', onDeviceOrientation, true);
+        window.addEventListener('deviceorientation', onDeviceOrientation, true);
+        return true;
+      }
+    } catch(err){ console.warn('Orientation permission denied:', err); }
+    return false;
+  } else {
+    // Android / desktop
+    window.addEventListener('deviceorientationabsolute', onDeviceOrientation, true);
+    window.addEventListener('deviceorientation', onDeviceOrientation, true);
+    headingPermissionGranted = true;
+    return true;
+  }
+}
+
+async function toggleHeading(prefix){
+  const btn = document.getElementById(prefix+'-headingBtn');
+  const row = document.getElementById(prefix+'-headingRow');
+  const g   = document.getElementById(prefix+'-headingG');
+
+  if(headingActive[prefix]){
+    // 끄기
+    headingActive[prefix] = false;
+    if(btn){ btn.textContent='🧭 진행방향 켜기'; btn.classList.remove('active'); }
+    if(row) row.style.display='none';
+    if(g)   g.setAttribute('opacity','0');
+  } else {
+    // 켜기: 권한 요청
+    if(!headingPermissionGranted){
+      const ok = await requestOrientationPermission();
+      if(!ok){
+        alert('기기 방향 센서 권한이 필요합니다.\n아이폰: 설정 → Safari → 동작 및 방향 허용');
+        return;
+      }
+    }
+    headingActive[prefix] = true;
+    if(btn){ btn.textContent='🧭 진행방향 끄기'; btn.classList.add('active'); }
+    if(row) row.style.display='flex';
+    if(g)   g.setAttribute('opacity','1');
+    updateHeadingNeedles();
+  }
 }
 
 function drawCompass(prefix, nowAz, riseAz, setAz, color){
