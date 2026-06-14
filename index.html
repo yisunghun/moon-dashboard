@@ -117,6 +117,60 @@ header{display:flex;align-items:flex-start;justify-content:space-between;margin-
 .alt-stat-label { color: var(--muted); }
 .alt-stat-val   { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--text); }
 
+
+/* ── AR 카메라 고도계 오버레이 ── */
+#arOverlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 200;
+  background: #000;
+  flex-direction: column;
+}
+#arOverlay.show { display: flex; }
+#arVideo {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+#arCanvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.ar-close-btn {
+  position: absolute; top: max(16px, env(safe-area-inset-top,16px)); right: 16px;
+  z-index: 10; width: 40px; height: 40px;
+  background: rgba(0,0,0,0.55); border: 0.5px solid rgba(255,255,255,0.2);
+  border-radius: 50%; color: #fff; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; backdrop-filter: blur(4px);
+}
+.ar-info-bar {
+  position: absolute; bottom: max(24px, env(safe-area-inset-bottom,24px));
+  left: 16px; right: 16px; z-index: 10;
+  background: rgba(0,0,0,0.55); border: 0.5px solid rgba(255,255,255,0.15);
+  border-radius: 14px; padding: 10px 16px;
+  backdrop-filter: blur(8px);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 8px;
+}
+.ar-info-item { text-align: center; }
+.ar-info-label { font-size: 9px; color: rgba(255,255,255,0.5); letter-spacing:.06em; text-transform:uppercase; }
+.ar-info-val   { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; color: #fff; margin-top: 1px; }
+.ar-body-pitch-line {
+  position: absolute; left: 0; right: 0; height: 1px;
+  background: rgba(255,255,0,0.6); pointer-events: none; z-index: 5;
+  transition: top .1s linear;
+}
+
+/* 고도계 카드 AR 버튼 */
+.ar-launch-btn {
+  font-size: 11px; color: var(--accent2); background: var(--bg3);
+  border: 0.5px solid var(--accent2); border-radius: 6px;
+  padding: 3px 9px; cursor: pointer; font-family: var(--font-sans);
+  margin-left: auto; display: block; width: fit-content; margin-bottom: 10px;
+}
+.ar-launch-btn:active { opacity: .7; }
+
 /* ── 타임라인 ── */
 .tl-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem 1.25rem;margin-bottom:12px}
 .tl-title{font-size:11px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:14px}
@@ -269,7 +323,10 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="tl-events" id="moon-tlEvents"></div>
   </div>
   <div class="altimeter-card">
-    <div class="altimeter-title">고도계</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+      <div class="altimeter-title" style="margin-bottom:0">고도계</div>
+      <button class="ar-launch-btn" onclick="openAR('moon','달','#c9a84c')">📷 AR 보기</button>
+    </div>
     <div class="altimeter-body">
       <div class="altimeter-svg-wrap">
         <svg id="moon-altSvg" width="100" height="100" viewBox="0 0 100 100"></svg>
@@ -358,7 +415,10 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="tl-events" id="jupiter-tlEvents"></div>
   </div>
   <div class="altimeter-card">
-    <div class="altimeter-title">고도계</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+      <div class="altimeter-title" style="margin-bottom:0">고도계</div>
+      <button class="ar-launch-btn" onclick="openAR('jupiter','목성','#c8a878')">📷 AR 보기</button>
+    </div>
     <div class="altimeter-body">
       <div class="altimeter-svg-wrap">
         <svg id="jupiter-altSvg" width="100" height="100" viewBox="0 0 100 100"></svg>
@@ -442,7 +502,10 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="tl-events" id="venus-tlEvents"></div>
   </div>
   <div class="altimeter-card">
-    <div class="altimeter-title">고도계</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+      <div class="altimeter-title" style="margin-bottom:0">고도계</div>
+      <button class="ar-launch-btn" onclick="openAR('venus','금성','#e8c4a0')">📷 AR 보기</button>
+    </div>
     <div class="altimeter-body">
       <div class="altimeter-svg-wrap">
         <svg id="venus-altSvg" width="100" height="100" viewBox="0 0 100 100"></svg>
@@ -526,7 +589,10 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="tl-events" id="saturn-tlEvents"></div>
   </div>
   <div class="altimeter-card">
-    <div class="altimeter-title">고도계</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+      <div class="altimeter-title" style="margin-bottom:0">고도계</div>
+      <button class="ar-launch-btn" onclick="openAR('saturn','토성','#b8a86a')">📷 AR 보기</button>
+    </div>
     <div class="altimeter-body">
       <div class="altimeter-svg-wrap">
         <svg id="saturn-altSvg" width="100" height="100" viewBox="0 0 100 100"></svg>
@@ -622,6 +688,32 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
 </div>
 
 </div><!-- /container -->
+<!-- ══ AR 카메라 고도계 오버레이 ══ -->
+<div id="arOverlay">
+  <video id="arVideo" autoplay playsinline muted></video>
+  <canvas id="arCanvas"></canvas>
+  <div class="ar-close-btn" onclick="closeAR()">✕</div>
+  <div class="ar-info-bar">
+    <div class="ar-info-item">
+      <div class="ar-info-label">천체</div>
+      <div class="ar-info-val" id="ar-bodyName">—</div>
+    </div>
+    <div class="ar-info-item">
+      <div class="ar-info-label">천체 고도</div>
+      <div class="ar-info-val" id="ar-bodyAlt">—</div>
+    </div>
+    <div class="ar-info-item">
+      <div class="ar-info-label">카메라 앙각</div>
+      <div class="ar-info-val" id="ar-camPitch">—</div>
+    </div>
+    <div class="ar-info-item">
+      <div class="ar-info-label">차이</div>
+      <div class="ar-info-val" id="ar-diff">—</div>
+    </div>
+  </div>
+</div>
+
+
 <script>
 // ═══════════════════════════════════════════════════════
 // 상수 & 공용 수학
@@ -1020,6 +1112,187 @@ async function requestOrientationPermission(){
     headingPermissionGranted = true;
     return true;
   }
+}
+
+
+// ═══════════════════════════════════════════════════════
+// AR 카메라 고도계
+// ═══════════════════════════════════════════════════════
+let arStream = null;
+let arAnimId = null;
+let arBodyAlt = 0;       // 천체 고도 (°)
+let arBodyColor = '#c9a84c';
+let arBodyLabel = '달';
+let arPitch = 0;         // 기기 앙각 (°, 위=양수)
+let arOrientListener = null;
+
+function openAR(prefix, label, color) {
+  arBodyAlt   = parseFloat(document.getElementById(prefix + '-altCur')?.textContent) || 0;
+  arBodyColor = color;
+  arBodyLabel = label;
+
+  document.getElementById('ar-bodyName').textContent = label;
+  document.getElementById('ar-bodyAlt').textContent  = (arBodyAlt >= 0 ? '+' : '') + arBodyAlt.toFixed(1) + '°';
+  document.getElementById('arOverlay').classList.add('show');
+
+  // 카메라 스트림
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+    .then(stream => {
+      arStream = stream;
+      const video = document.getElementById('arVideo');
+      video.srcObject = stream;
+      video.play();
+      startARDraw();
+    })
+    .catch(err => {
+      alert('카메라 권한이 필요합니다.\n설정 → Safari → 카메라 → 허용');
+      closeAR();
+    });
+
+  // 기기 기울기 (앙각)
+  async function startOrientation() {
+    if (typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission === 'function') {
+      try { await DeviceOrientationEvent.requestPermission(); } catch(e) {}
+    }
+    arOrientListener = (e) => {
+      // beta: 앞뒤 기울기 (-180~180). 세로모드: 평지=0, 하늘=+90
+      if (e.beta !== null) arPitch = e.beta - 90; // 수평 기준 앙각
+    };
+    window.addEventListener('deviceorientation', arOrientListener, true);
+  }
+  startOrientation();
+}
+
+function closeAR() {
+  document.getElementById('arOverlay').classList.remove('show');
+  if (arStream) { arStream.getTracks().forEach(t => t.stop()); arStream = null; }
+  if (arAnimId) { cancelAnimationFrame(arAnimId); arAnimId = null; }
+  if (arOrientListener) { window.removeEventListener('deviceorientation', arOrientListener, true); arOrientListener = null; }
+}
+
+function startARDraw() {
+  const canvas = document.getElementById('arCanvas');
+  const ctx    = canvas.getContext('2d');
+  const video  = document.getElementById('arVideo');
+
+  function draw() {
+    arAnimId = requestAnimationFrame(draw);
+    const W = window.innerWidth, H = window.innerHeight;
+    if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; }
+    ctx.clearRect(0, 0, W, H);
+
+    // ── 수평선 (pitch=0) ────────────────────────────────────────
+    // 화면 중앙=카메라 앙각. pitch° 올라갈수록 수평선은 아래로
+    const fov = 60; // 추정 수직 FOV (도)
+    const pxPerDeg = H / fov;
+
+    // 수평선 Y 위치
+    const horizY = H / 2 + arPitch * pxPerDeg;
+
+    // 수평선 그리기
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([12, 8]);
+    ctx.beginPath(); ctx.moveTo(0, horizY); ctx.lineTo(W, horizY); ctx.stroke();
+    ctx.setLineDash([]);
+    // "수평" 레이블
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText('수평 0°', W - 10, horizY - 4);
+    ctx.restore();
+
+    // ── 고도 눈금선 (15° 간격) ──────────────────────────────────
+    for (let alt = -30; alt <= 90; alt += 15) {
+      if (alt === 0) continue;
+      const lineY = H / 2 + (arPitch - alt) * pxPerDeg;
+      if (lineY < -20 || lineY > H + 20) continue;
+      const isMain = alt % 30 === 0;
+      ctx.save();
+      ctx.strokeStyle = isMain ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)';
+      ctx.lineWidth = isMain ? 0.8 : 0.5;
+      ctx.setLineDash([6, 10]);
+      ctx.beginPath(); ctx.moveTo(0, lineY); ctx.lineTo(W, lineY); ctx.stroke();
+      ctx.setLineDash([]);
+      if (isMain) {
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText(alt + '°', W - 10, lineY - 4);
+      }
+      ctx.restore();
+    }
+
+    // ── 천체 목표선 ─────────────────────────────────────────────
+    const bodyY = H / 2 + (arPitch - arBodyAlt) * pxPerDeg;
+    const onScreen = bodyY >= -5 && bodyY <= H + 5;
+
+    if (onScreen) {
+      // 글로우
+      ctx.save();
+      ctx.shadowColor = arBodyColor;
+      ctx.shadowBlur  = 16;
+      ctx.strokeStyle = arBodyColor;
+      ctx.lineWidth   = 2;
+      ctx.beginPath(); ctx.moveTo(0, bodyY); ctx.lineTo(W, bodyY); ctx.stroke();
+      ctx.restore();
+
+      // 레이블 박스
+      const bw = 130, bh = 36, bx = W / 2 - bw / 2, by = bodyY - bh - 8;
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.beginPath(); ctx.roundRect(bx, Math.max(by, 8), bw, bh, 8); ctx.fill();
+      ctx.fillStyle = arBodyColor;
+      ctx.font = 'bold 13px "Noto Sans KR",sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(arBodyLabel + ' ' + (arBodyAlt >= 0 ? '+' : '') + arBodyAlt.toFixed(1) + '°', W / 2, Math.max(by, 8) + bh / 2);
+      ctx.restore();
+
+      // 좌우 화살표 팁
+      [[16, bodyY], [W - 16, bodyY]].forEach(([x, y]) => {
+        ctx.save();
+        ctx.fillStyle = arBodyColor;
+        ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      });
+    } else {
+      // 화면 밖: 화살표로 방향 안내
+      const arrow = bodyY < 0 ? '▲' : '▼';
+      const arrY  = bodyY < 0 ? 60 : H - 60;
+      const diff  = Math.abs(arBodyAlt - (-arPitch + (bodyY < 0 ? fov/2 : -fov/2))).toFixed(1);
+      ctx.save();
+      ctx.fillStyle = arBodyColor;
+      ctx.font = '22px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(arrow, W / 2, arrY);
+      ctx.font = 'bold 13px "Noto Sans KR",sans-serif';
+      ctx.fillText(arBodyLabel + ' ' + (arBodyAlt >= 0 ? '+' : '') + arBodyAlt.toFixed(1) + '°', W / 2, arrY + 28);
+      ctx.restore();
+    }
+
+    // ── 중앙 조준점 ─────────────────────────────────────────────
+    const mx = W / 2, my = H / 2;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 1.2;
+    [[mx-20,my,mx-8,my],[mx+8,my,mx+20,my],[mx,my-20,mx,my-8],[mx,my+8,mx,my+20]].forEach(([x1,y1,x2,y2]) => {
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    });
+    ctx.restore();
+
+    // ── 현재 앙각 텍스트 (중앙 오른쪽) ─────────────────────────
+    const camAlt = -arPitch;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText((camAlt >= 0 ? '+' : '') + camAlt.toFixed(1) + '°', mx + 18, my + 5);
+    ctx.restore();
+
+    // ── 정보바 업데이트 ─────────────────────────────────────────
+    document.getElementById('ar-camPitch').textContent = (camAlt >= 0 ? '+' : '') + camAlt.toFixed(1) + '°';
+    const diff = arBodyAlt - camAlt;
+    document.getElementById('ar-diff').textContent = (diff >= 0 ? '↑' : '↓') + Math.abs(diff).toFixed(1) + '°';
+    document.getElementById('ar-diff').style.color = Math.abs(diff) < 5 ? '#4a9e6b' : '#fff';
+  }
+  draw();
 }
 
 async function toggleHeading(prefix){
