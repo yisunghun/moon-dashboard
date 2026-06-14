@@ -87,6 +87,36 @@ header{display:flex;align-items:flex-start;justify-content:space-between;margin-
 .badge-dot{width:7px;height:7px;border-radius:50%}
 .next-event{font-size:12px;color:var(--muted)}
 
+
+/* ── 고도계 ── */
+.altimeter-card {
+  background: var(--bg2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 1rem 1.25rem 1.1rem;
+  margin-bottom: 12px;
+}
+.altimeter-title {
+  font-size: 11px; color: var(--muted);
+  letter-spacing: .07em; text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.altimeter-body {
+  display: flex; align-items: center; gap: 1.5rem;
+}
+.altimeter-svg-wrap { flex-shrink: 0; }
+.altimeter-stats {
+  flex: 1; display: flex; flex-direction: column; gap: 8px;
+}
+.alt-stat-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 0.5px solid var(--border); padding-bottom: 7px;
+  font-size: 12px;
+}
+.alt-stat-row:last-child { border-bottom: none; padding-bottom: 0; }
+.alt-stat-label { color: var(--muted); }
+.alt-stat-val   { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--text); }
+
 /* ── 타임라인 ── */
 .tl-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem 1.25rem;margin-bottom:12px}
 .tl-title{font-size:11px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:14px}
@@ -238,6 +268,21 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="tl-axis"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
     <div class="tl-events" id="moon-tlEvents"></div>
   </div>
+  <div class="altimeter-card">
+    <div class="altimeter-title">고도계</div>
+    <div class="altimeter-body">
+      <div class="altimeter-svg-wrap">
+        <svg id="moon-altSvg" width="100" height="100" viewBox="0 0 100 100"></svg>
+      </div>
+      <div class="altimeter-stats">
+        <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="moon-altCur" style="color:#c9a84c">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">최대 고도 (남중)</span><span class="alt-stat-val" id="moon-altMax">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">출 고도</span><span class="alt-stat-val" style="color:var(--rise)" id="moon-altRise">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">몰 고도</span><span class="alt-stat-val" style="color:var(--set)" id="moon-altSet">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">상태</span><span class="alt-stat-val" id="moon-altStatus">—</span></div>
+      </div>
+    </div>
+  </div>
   <div class="arc-card"><div class="arc-title">고도 곡선 (1시간 간격)</div><svg class="arc-svg" viewBox="0 0 600 150" id="moon-arcSvg"></svg></div>
   <div class="compass-card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -312,6 +357,21 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="tl-axis"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
     <div class="tl-events" id="jupiter-tlEvents"></div>
   </div>
+  <div class="altimeter-card">
+    <div class="altimeter-title">고도계</div>
+    <div class="altimeter-body">
+      <div class="altimeter-svg-wrap">
+        <svg id="jupiter-altSvg" width="100" height="100" viewBox="0 0 100 100"></svg>
+      </div>
+      <div class="altimeter-stats">
+        <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="jupiter-altCur" style="color:#c8a878">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">최대 고도 (남중)</span><span class="alt-stat-val" id="jupiter-altMax">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">출 고도</span><span class="alt-stat-val" style="color:var(--rise)" id="jupiter-altRise">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">몰 고도</span><span class="alt-stat-val" style="color:var(--set)" id="jupiter-altSet">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">상태</span><span class="alt-stat-val" id="jupiter-altStatus">—</span></div>
+      </div>
+    </div>
+  </div>
   <div class="arc-card"><div class="arc-title">고도 곡선 (1시간 간격)</div><svg class="arc-svg" viewBox="0 0 600 150" id="jupiter-arcSvg"></svg></div>
   <div class="compass-card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="compass-title" style="margin-bottom:0">방위 나침반</div><button class="compass-heading-btn" id="jupiter-headingBtn" onclick="toggleHeading('jupiter')">🧭 진행방향 켜기</button></div>
     <div class="compass-layout">
@@ -381,6 +441,21 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="tl-axis"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
     <div class="tl-events" id="venus-tlEvents"></div>
   </div>
+  <div class="altimeter-card">
+    <div class="altimeter-title">고도계</div>
+    <div class="altimeter-body">
+      <div class="altimeter-svg-wrap">
+        <svg id="venus-altSvg" width="100" height="100" viewBox="0 0 100 100"></svg>
+      </div>
+      <div class="altimeter-stats">
+        <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="venus-altCur" style="color:#e8c4a0">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">최대 고도 (남중)</span><span class="alt-stat-val" id="venus-altMax">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">출 고도</span><span class="alt-stat-val" style="color:var(--rise)" id="venus-altRise">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">몰 고도</span><span class="alt-stat-val" style="color:var(--set)" id="venus-altSet">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">상태</span><span class="alt-stat-val" id="venus-altStatus">—</span></div>
+      </div>
+    </div>
+  </div>
   <div class="arc-card"><div class="arc-title">고도 곡선 (1시간 간격)</div><svg class="arc-svg" viewBox="0 0 600 150" id="venus-arcSvg"></svg></div>
   <div class="compass-card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="compass-title" style="margin-bottom:0">방위 나침반</div><button class="compass-heading-btn" id="venus-headingBtn" onclick="toggleHeading('venus')">🧭 진행방향 켜기</button></div>
     <div class="compass-layout">
@@ -449,6 +524,21 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="tl-track"><div class="tl-fill" id="saturn-tlFill" style="background:var(--saturn)"></div><div class="tl-now" id="saturn-tlNow"></div></div>
     <div class="tl-axis"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
     <div class="tl-events" id="saturn-tlEvents"></div>
+  </div>
+  <div class="altimeter-card">
+    <div class="altimeter-title">고도계</div>
+    <div class="altimeter-body">
+      <div class="altimeter-svg-wrap">
+        <svg id="saturn-altSvg" width="100" height="100" viewBox="0 0 100 100"></svg>
+      </div>
+      <div class="altimeter-stats">
+        <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="saturn-altCur" style="color:#b8a86a">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">최대 고도 (남중)</span><span class="alt-stat-val" id="saturn-altMax">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">출 고도</span><span class="alt-stat-val" style="color:var(--rise)" id="saturn-altRise">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">몰 고도</span><span class="alt-stat-val" style="color:var(--set)" id="saturn-altSet">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">상태</span><span class="alt-stat-val" id="saturn-altStatus">—</span></div>
+      </div>
+    </div>
   </div>
   <div class="arc-card"><div class="arc-title">고도 곡선 (1시간 간격)</div><svg class="arc-svg" viewBox="0 0 600 150" id="saturn-arcSvg"></svg></div>
   <div class="compass-card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="compass-title" style="margin-bottom:0">방위 나침반</div><button class="compass-heading-btn" id="saturn-headingBtn" onclick="toggleHeading('saturn')">🧭 진행방향 켜기</button></div>
@@ -722,6 +812,112 @@ function altArray(jdMid, getEquat){
 // ═══════════════════════════════════════════════════════
 // 공용 UI 렌더러
 // ═══════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════
+// 고도계 렌더러
+// ═══════════════════════════════════════════════════════
+function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color) {
+  const svg = document.getElementById(prefix + '-altSvg');
+  if (!svg) return;
+  const ns = 'http://www.w3.org/2000/svg';
+  svg.innerHTML = '';
+  const W = 100, H = 100, cx = 50, cy = 54, R = 40;
+  const startAngle = 220, endAngle = -40; // 220° → 320° 범위 (시계 방향 260° 호)
+  const minAlt = -10, range = 90 - minAlt; // -10° ~ 90°
+
+  function angFor(alt) {
+    const clamped = Math.max(minAlt, Math.min(90, alt));
+    const t = (clamped - minAlt) / range; // 0~1
+    // startAngle(220°) → endAngle(-40°=320°) 반시계
+    return startAngle - t * 260;
+  }
+  function polarXY(cx, cy, r, angleDeg) {
+    const rad = angleDeg * Math.PI / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  }
+  function mk(tag, attrs, txt) {
+    const el = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+    if (txt !== undefined) el.textContent = txt;
+    return el;
+  }
+  function arcPath(cx, cy, r, aStart, aEnd) {
+    const s = polarXY(cx, cy, r, aStart);
+    const e = polarXY(cx, cy, r, aEnd);
+    const large = Math.abs(aEnd - aStart) > 180 ? 1 : 0;
+    // 반시계(sweep=0)
+    return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${r} ${r} 0 ${large} 0 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`;
+  }
+
+  // 배경 원
+  svg.appendChild(mk('circle', { cx, cy, r: R+6, fill: 'var(--bg3)', stroke: 'var(--border2)', 'stroke-width': '.5' }));
+
+  // 회색 전체 호 (배경 트랙)
+  svg.appendChild(mk('path', {
+    d: arcPath(cx, cy, R, startAngle, endAngle),
+    fill: 'none', stroke: 'rgba(255,255,255,0.08)', 'stroke-width': '7', 'stroke-linecap': 'round'
+  }));
+
+  // 색깔 채움 호 (현재 고도까지)
+  const fillEnd = angFor(curAlt);
+  if (curAlt > minAlt) {
+    svg.appendChild(mk('path', {
+      d: arcPath(cx, cy, R, startAngle, fillEnd),
+      fill: 'none', stroke: color, 'stroke-width': '7', 'stroke-linecap': 'round', opacity: '.85'
+    }));
+  }
+
+  // 지평선 마커 (0° 위치)
+  const horizAng = angFor(0);
+  const hi = polarXY(cx, cy, R - 6, horizAng);
+  const ho = polarXY(cx, cy, R + 6, horizAng);
+  svg.appendChild(mk('line', { x1: hi.x.toFixed(2), y1: hi.y.toFixed(2), x2: ho.x.toFixed(2), y2: ho.y.toFixed(2), stroke: 'rgba(255,255,255,0.3)', 'stroke-width': '1.5' }));
+
+  // 눈금 (0°, 30°, 60°, 90°)
+  [0, 30, 60, 90].forEach(alt => {
+    const ang = angFor(alt);
+    const inner = polarXY(cx, cy, R - 5, ang);
+    const outer = polarXY(cx, cy, R + 1, ang);
+    const lp    = polarXY(cx, cy, R + 10, ang);
+    svg.appendChild(mk('line', { x1: inner.x.toFixed(2), y1: inner.y.toFixed(2), x2: outer.x.toFixed(2), y2: outer.y.toFixed(2), stroke: 'rgba(255,255,255,0.25)', 'stroke-width': '1' }));
+    const t = mk('text', { x: lp.x.toFixed(2), y: lp.y.toFixed(2), 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '7', fill: 'rgba(255,255,255,0.35)', 'font-family': 'sans-serif' }, alt + '°');
+    svg.appendChild(t);
+  });
+
+  // 바늘 (현재 고도)
+  const needleAng = angFor(curAlt);
+  const np = polarXY(cx, cy, R - 8, needleAng);
+  svg.appendChild(mk('line', { x1: cx, y1: cy, x2: np.x.toFixed(2), y2: np.y.toFixed(2), stroke: color, 'stroke-width': '2.5', 'stroke-linecap': 'round' }));
+
+  // 남중(최대) 마커
+  if (maxAlt !== null) {
+    const ma = angFor(maxAlt);
+    const mp1 = polarXY(cx, cy, R - 3, ma);
+    const mp2 = polarXY(cx, cy, R + 3, ma);
+    svg.appendChild(mk('line', { x1: mp1.x.toFixed(2), y1: mp1.y.toFixed(2), x2: mp2.x.toFixed(2), y2: mp2.y.toFixed(2), stroke: 'var(--accent)', 'stroke-width': '2', 'stroke-linecap': 'round' }));
+  }
+
+  // 중심 도트
+  svg.appendChild(mk('circle', { cx, cy, r: '4', fill: color, stroke: 'var(--bg3)', 'stroke-width': '1.5' }));
+
+  // 중앙 고도 텍스트
+  const sign = curAlt >= 0 ? '+' : '';
+  const tEl = mk('text', { x: cx, y: cy - 14, 'text-anchor': 'middle', 'font-size': '13', 'font-weight': '600', fill: color, 'font-family': "'Noto Sans KR',sans-serif" }, sign + curAlt.toFixed(1) + '°');
+  svg.appendChild(tEl);
+  const labelEl = mk('text', { x: cx, y: cy - 4, 'text-anchor': 'middle', 'font-size': '7', fill: 'var(--muted)', 'font-family': 'sans-serif' }, 'ALTITUDE');
+  svg.appendChild(labelEl);
+
+  // 텍스트 stats 업데이트
+  const sign2 = curAlt >= 0 ? '+' : '';
+  const el = id => document.getElementById(prefix + '-' + id);
+  if (el('altCur'))    el('altCur').textContent    = sign2 + curAlt.toFixed(1) + '°';
+  if (el('altMax'))    el('altMax').textContent    = maxAlt !== null ? '+' + maxAlt.toFixed(1) + '°' : '—';
+  if (el('altRise'))   el('altRise').textContent   = riseAlt !== null ? riseAlt.toFixed(1) + '°' : '—';
+  if (el('altSet'))    el('altSet').textContent    = setAlt  !== null ? setAlt.toFixed(1) + '°'  : '—';
+  if (el('altStatus')) el('altStatus').textContent = curAlt > 0 ? (curAlt > 30 ? '관측 적합 ✓' : '낮은 고도') : '지평선 아래';
+  if (el('altStatus')) el('altStatus').style.color = curAlt > 30 ? 'var(--rise)' : curAlt > 0 ? 'var(--accent)' : 'var(--muted)';
+}
+
 function drawArc(svgId, alts, color){
   const svg=document.getElementById(svgId);
   if(!svg) return;
@@ -971,6 +1167,9 @@ function runMoon(now, kstNow, jdNow, jdMid, nowMin){
 
   renderTimeline('moon',rT,trT,sT,nowMin,'#c9a84c');
   drawArc('moon-arcSvg', altArray(jdMid,getEq), '#c9a84c');
+  const moonRiseAlt = riseJD ? (() => { const e=eclToEquat(moonPosition(riseJD).lon, moonPosition(riseJD).lat, riseJD); return altAz(e.ra,e.dec,lstDeg(riseJD,LNG),LAT).alt; })() : null;
+  const moonSetAlt  = setJD  ? (() => { const e=eclToEquat(moonPosition(setJD).lon,  moonPosition(setJD).lat,  setJD);  return altAz(e.ra,e.dec,lstDeg(setJD,LNG),LAT).alt; })() : null;
+  drawAltimeter('moon', pos.alt, transitEl, moonRiseAlt, moonSetAlt, '#c9a84c');
   drawCompass('moon',pos.az,riseAzV,setAzV,'#c9a84c');
   document.getElementById('moon-cAlt').textContent=(pos.alt>=0?'+':'')+pos.alt.toFixed(1)+'°';
 
@@ -1028,6 +1227,9 @@ function runPlanet(name, jdNow, jdMid, nowMin){
 
   renderTimeline(name,rT,trT,sT,nowMin,color);
   drawArc(name+'-arcSvg', altArray(jdMid,getEq), color);
+  const pRiseAlt = riseJD ? altAz(getEq(riseJD).ra, getEq(riseJD).dec, lstDeg(riseJD,LNG), LAT).alt : null;
+  const pSetAlt  = setJD  ? altAz(getEq(setJD).ra,  getEq(setJD).dec,  lstDeg(setJD,LNG),  LAT).alt : null;
+  drawAltimeter(name, pos.alt, transitEl, pRiseAlt, pSetAlt, color);
   drawCompass(name,pos.az,rAz,sAz,color);
   document.getElementById(name+'-cAlt').textContent=(pos.alt>=0?'+':'')+pos.alt.toFixed(1)+'°';
 
