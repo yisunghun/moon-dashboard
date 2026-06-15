@@ -102,20 +102,19 @@ header{display:flex;align-items:flex-start;justify-content:space-between;margin-
   margin-bottom: 14px;
 }
 .altimeter-body {
-  display: flex; align-items: center; gap: 1.5rem;
+  display: flex; flex-direction: column; gap: 0.75rem;
 }
-.altimeter-svg-wrap { flex-shrink: 0; }
+.altimeter-svg-wrap { width: 100%; display: flex; justify-content: center; }
 .altimeter-stats {
-  flex: 1; display: flex; flex-direction: column; gap: 8px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px;
 }
 .alt-stat-row {
-  display: flex; justify-content: space-between; align-items: baseline;
-  border-bottom: 0.5px solid var(--border); padding-bottom: 7px;
+  display: flex; flex-direction: column; gap: 2px;
+  background: var(--bg3); border-radius: 8px; padding: 7px 10px;
   font-size: 12px;
 }
-.alt-stat-row:last-child { border-bottom: none; padding-bottom: 0; }
 .alt-stat-label { color: var(--muted); }
-.alt-stat-val   { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--text); }
+.alt-stat-val   { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text); font-size: 14px; margin-top: 1px; }
 
 
 /* ── AR 카메라 고도계 오버레이 ── */
@@ -329,10 +328,11 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div class="altimeter-svg-wrap">
-        <svg id="moon-altSvg" width="100" height="100" viewBox="0 0 100 100"></svg>
+        <svg id="moon-altSvg" width="260" height="200" viewBox="0 0 260 200" style="max-width:100%"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="moon-altCur" style="color:#c9a84c">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">방위각</span><span class="alt-stat-val" id="moon-altAzVal">—</span></div>
         <div class="alt-stat-row"><span class="alt-stat-label">최대 고도 (남중)</span><span class="alt-stat-val" id="moon-altMax">—</span></div>
         <div class="alt-stat-row"><span class="alt-stat-label">출 고도</span><span class="alt-stat-val" style="color:var(--rise)" id="moon-altRise">—</span></div>
         <div class="alt-stat-row"><span class="alt-stat-label">몰 고도</span><span class="alt-stat-val" style="color:var(--set)" id="moon-altSet">—</span></div>
@@ -361,17 +361,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <circle id="moon-setDot" cx="80" cy="26" r="4" fill="var(--set)" opacity=".85"/>
         <line id="moon-nowNeedle" x1="80" y1="80" x2="80" y2="22" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
         <circle id="moon-nowDot" cx="80" cy="22" r="5" fill="var(--accent)"/>
-        <!-- 앙각 표시 -->
-        <g id="moon-altG">
-          <!-- 앙각 부채꼴 (수평선 기준) -->
-          <path id="moon-altArc" d="" fill="none" stroke="" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
-          <!-- 앙각 수평 기준선 (가는 점선) -->
-          <line id="moon-altHorizLine" x1="80" y1="80" x2="80" y2="80" stroke="rgba(255,255,255,0.2)" stroke-width="0.8" stroke-dasharray="3 3"/>
-          <!-- 앙각 값 텍스트 -->
-          <text id="moon-altLabel" x="80" y="80" text-anchor="middle" font-size="8" font-family="sans-serif" fill="rgba(255,255,255,0.7)"></text>
-          <!-- 지평선 아래 표시 (음수 고도) -->
-          <text id="moon-belowLabel" x="80" y="92" text-anchor="middle" font-size="7.5" font-family="sans-serif" fill="rgba(255,255,255,0.35)" display="none">지평선 아래</text>
-        </g>
         <!-- 진행방향 화살표 (heading) -->
         <g id="moon-headingG" opacity="0" style="transition:opacity .3s">
           <line id="moon-headingLine" x1="80" y1="80" x2="80" y2="18" stroke="#4a7fc1" stroke-width="3" stroke-linecap="round"/>
@@ -430,7 +419,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="moon-cSet">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="moon-cAlt">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">🔺 앙각</span><span class="cinfo-val" id="moon-cAltAngle" style="color:rgba(255,255,255,0.7)">—</span></div>
-        <div class="cinfo-row" id="moon-altInfoRow"><span class="cinfo-label">📐 앙각</span><span class="cinfo-val" id="moon-compassAlt" style="font-size:13px">—</span></div>
         <div class="heading-row" id="moon-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="moon-headingVal">—</span></div>
       </div>
     </div>
@@ -478,10 +466,11 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div class="altimeter-svg-wrap">
-        <svg id="jupiter-altSvg" width="100" height="100" viewBox="0 0 100 100"></svg>
+        <svg id="jupiter-altSvg" width="260" height="200" viewBox="0 0 260 200" style="max-width:100%"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="jupiter-altCur" style="color:#c8a878">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">방위각</span><span class="alt-stat-val" id="jupiter-altAzVal">—</span></div>
         <div class="alt-stat-row"><span class="alt-stat-label">최대 고도 (남중)</span><span class="alt-stat-val" id="jupiter-altMax">—</span></div>
         <div class="alt-stat-row"><span class="alt-stat-label">출 고도</span><span class="alt-stat-val" style="color:var(--rise)" id="jupiter-altRise">—</span></div>
         <div class="alt-stat-row"><span class="alt-stat-label">몰 고도</span><span class="alt-stat-val" style="color:var(--set)" id="jupiter-altSet">—</span></div>
@@ -506,17 +495,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <circle id="jupiter-setDot" cx="80" cy="26" r="4" fill="var(--set)" opacity=".85"/>
         <line id="jupiter-nowNeedle" x1="80" y1="80" x2="80" y2="22" stroke="var(--jupiter)" stroke-width="2.5" stroke-linecap="round"/>
         <circle id="jupiter-nowDot" cx="80" cy="22" r="5" fill="var(--jupiter)"/>
-        <!-- 앙각 표시 -->
-        <g id="jupiter-altG">
-          <!-- 앙각 부채꼴 (수평선 기준) -->
-          <path id="jupiter-altArc" d="" fill="none" stroke="" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
-          <!-- 앙각 수평 기준선 (가는 점선) -->
-          <line id="jupiter-altHorizLine" x1="80" y1="80" x2="80" y2="80" stroke="rgba(255,255,255,0.2)" stroke-width="0.8" stroke-dasharray="3 3"/>
-          <!-- 앙각 값 텍스트 -->
-          <text id="jupiter-altLabel" x="80" y="80" text-anchor="middle" font-size="8" font-family="sans-serif" fill="rgba(255,255,255,0.7)"></text>
-          <!-- 지평선 아래 표시 (음수 고도) -->
-          <text id="jupiter-belowLabel" x="80" y="92" text-anchor="middle" font-size="7.5" font-family="sans-serif" fill="rgba(255,255,255,0.35)" display="none">지평선 아래</text>
-        </g>
         <!-- 진행방향 화살표 (heading) -->
         <g id="jupiter-headingG" opacity="0" style="transition:opacity .3s">
           <line id="jupiter-headingLine" x1="80" y1="80" x2="80" y2="18" stroke="#4a7fc1" stroke-width="3" stroke-linecap="round"/>
@@ -531,7 +509,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="jupiter-cSet">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="jupiter-cAlt">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">🔺 앙각</span><span class="cinfo-val" id="jupiter-cAltAngle" style="color:rgba(255,255,255,0.7)">—</span></div>
-        <div class="cinfo-row" id="jupiter-altInfoRow"><span class="cinfo-label">📐 앙각</span><span class="cinfo-val" id="jupiter-compassAlt" style="font-size:13px">—</span></div>
         <div class="heading-row" id="jupiter-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="jupiter-headingVal">—</span></div>
       </div>
     </div>
@@ -578,10 +555,11 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div class="altimeter-svg-wrap">
-        <svg id="venus-altSvg" width="100" height="100" viewBox="0 0 100 100"></svg>
+        <svg id="venus-altSvg" width="260" height="200" viewBox="0 0 260 200" style="max-width:100%"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="venus-altCur" style="color:#e8c4a0">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">방위각</span><span class="alt-stat-val" id="venus-altAzVal">—</span></div>
         <div class="alt-stat-row"><span class="alt-stat-label">최대 고도 (남중)</span><span class="alt-stat-val" id="venus-altMax">—</span></div>
         <div class="alt-stat-row"><span class="alt-stat-label">출 고도</span><span class="alt-stat-val" style="color:var(--rise)" id="venus-altRise">—</span></div>
         <div class="alt-stat-row"><span class="alt-stat-label">몰 고도</span><span class="alt-stat-val" style="color:var(--set)" id="venus-altSet">—</span></div>
@@ -606,17 +584,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <circle id="venus-setDot" cx="80" cy="26" r="4" fill="var(--set)" opacity=".85"/>
         <line id="venus-nowNeedle" x1="80" y1="80" x2="80" y2="22" stroke="var(--venus)" stroke-width="2.5" stroke-linecap="round"/>
         <circle id="venus-nowDot" cx="80" cy="22" r="5" fill="var(--venus)"/>
-        <!-- 앙각 표시 -->
-        <g id="venus-altG">
-          <!-- 앙각 부채꼴 (수평선 기준) -->
-          <path id="venus-altArc" d="" fill="none" stroke="" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
-          <!-- 앙각 수평 기준선 (가는 점선) -->
-          <line id="venus-altHorizLine" x1="80" y1="80" x2="80" y2="80" stroke="rgba(255,255,255,0.2)" stroke-width="0.8" stroke-dasharray="3 3"/>
-          <!-- 앙각 값 텍스트 -->
-          <text id="venus-altLabel" x="80" y="80" text-anchor="middle" font-size="8" font-family="sans-serif" fill="rgba(255,255,255,0.7)"></text>
-          <!-- 지평선 아래 표시 (음수 고도) -->
-          <text id="venus-belowLabel" x="80" y="92" text-anchor="middle" font-size="7.5" font-family="sans-serif" fill="rgba(255,255,255,0.35)" display="none">지평선 아래</text>
-        </g>
         <!-- 진행방향 화살표 (heading) -->
         <g id="venus-headingG" opacity="0" style="transition:opacity .3s">
           <line id="venus-headingLine" x1="80" y1="80" x2="80" y2="18" stroke="#4a7fc1" stroke-width="3" stroke-linecap="round"/>
@@ -631,7 +598,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="venus-cSet">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="venus-cAlt">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">🔺 앙각</span><span class="cinfo-val" id="venus-cAltAngle" style="color:rgba(255,255,255,0.7)">—</span></div>
-        <div class="cinfo-row" id="venus-altInfoRow"><span class="cinfo-label">📐 앙각</span><span class="cinfo-val" id="venus-compassAlt" style="font-size:13px">—</span></div>
         <div class="heading-row" id="venus-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="venus-headingVal">—</span></div>
       </div>
     </div>
@@ -678,10 +644,11 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div class="altimeter-svg-wrap">
-        <svg id="saturn-altSvg" width="100" height="100" viewBox="0 0 100 100"></svg>
+        <svg id="saturn-altSvg" width="260" height="200" viewBox="0 0 260 200" style="max-width:100%"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="saturn-altCur" style="color:#b8a86a">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">방위각</span><span class="alt-stat-val" id="saturn-altAzVal">—</span></div>
         <div class="alt-stat-row"><span class="alt-stat-label">최대 고도 (남중)</span><span class="alt-stat-val" id="saturn-altMax">—</span></div>
         <div class="alt-stat-row"><span class="alt-stat-label">출 고도</span><span class="alt-stat-val" style="color:var(--rise)" id="saturn-altRise">—</span></div>
         <div class="alt-stat-row"><span class="alt-stat-label">몰 고도</span><span class="alt-stat-val" style="color:var(--set)" id="saturn-altSet">—</span></div>
@@ -706,17 +673,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <circle id="saturn-setDot" cx="80" cy="26" r="4" fill="var(--set)" opacity=".85"/>
         <line id="saturn-nowNeedle" x1="80" y1="80" x2="80" y2="22" stroke="var(--saturn)" stroke-width="2.5" stroke-linecap="round"/>
         <circle id="saturn-nowDot" cx="80" cy="22" r="5" fill="var(--saturn)"/>
-        <!-- 앙각 표시 -->
-        <g id="saturn-altG">
-          <!-- 앙각 부채꼴 (수평선 기준) -->
-          <path id="saturn-altArc" d="" fill="none" stroke="" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
-          <!-- 앙각 수평 기준선 (가는 점선) -->
-          <line id="saturn-altHorizLine" x1="80" y1="80" x2="80" y2="80" stroke="rgba(255,255,255,0.2)" stroke-width="0.8" stroke-dasharray="3 3"/>
-          <!-- 앙각 값 텍스트 -->
-          <text id="saturn-altLabel" x="80" y="80" text-anchor="middle" font-size="8" font-family="sans-serif" fill="rgba(255,255,255,0.7)"></text>
-          <!-- 지평선 아래 표시 (음수 고도) -->
-          <text id="saturn-belowLabel" x="80" y="92" text-anchor="middle" font-size="7.5" font-family="sans-serif" fill="rgba(255,255,255,0.35)" display="none">지평선 아래</text>
-        </g>
         <!-- 진행방향 화살표 (heading) -->
         <g id="saturn-headingG" opacity="0" style="transition:opacity .3s">
           <line id="saturn-headingLine" x1="80" y1="80" x2="80" y2="18" stroke="#4a7fc1" stroke-width="3" stroke-linecap="round"/>
@@ -731,7 +687,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
         <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="saturn-cSet">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="saturn-cAlt">—</span></div>
         <div class="cinfo-row"><span class="cinfo-label">🔺 앙각</span><span class="cinfo-val" id="saturn-cAltAngle" style="color:rgba(255,255,255,0.7)">—</span></div>
-        <div class="cinfo-row" id="saturn-altInfoRow"><span class="cinfo-label">📐 앙각</span><span class="cinfo-val" id="saturn-compassAlt" style="font-size:13px">—</span></div>
         <div class="heading-row" id="saturn-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="saturn-headingVal">—</span></div>
       </div>
     </div>
@@ -1002,109 +957,190 @@ function altArray(jdMid, getEquat){
 // ═══════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════
-// 고도계 렌더러
+// 고도계 렌더러 (고도 게이지 + 방위 나침반 통합)
 // ═══════════════════════════════════════════════════════
-function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color) {
+function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, riseAz, setAz) {
   const svg = document.getElementById(prefix + '-altSvg');
   if (!svg) return;
   const ns = 'http://www.w3.org/2000/svg';
   svg.innerHTML = '';
-  const W = 100, H = 100, cx = 50, cy = 54, R = 40;
-  const startAngle = 220, endAngle = -40; // 220° → 320° 범위 (시계 방향 260° 호)
-  const minAlt = -10, range = 90 - minAlt; // -10° ~ 90°
 
-  function angFor(alt) {
-    const clamped = Math.max(minAlt, Math.min(90, alt));
-    const t = (clamped - minAlt) / range; // 0~1
-    // startAngle(220°) → endAngle(-40°=320°) 반시계
-    return startAngle - t * 260;
-  }
-  function polarXY(cx, cy, r, angleDeg) {
-    const rad = angleDeg * Math.PI / 180;
-    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-  }
-  function mk(tag, attrs, txt) {
+  const mk = (tag, attrs, txt) => {
     const el = document.createElementNS(ns, tag);
-    Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+    Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k,v));
     if (txt !== undefined) el.textContent = txt;
     return el;
-  }
-  function arcPath(cx, cy, r, aStart, aEnd) {
-    const s = polarXY(cx, cy, r, aStart);
-    const e = polarXY(cx, cy, r, aEnd);
-    const large = Math.abs(aEnd - aStart) > 180 ? 1 : 0;
-    // 반시계(sweep=0)
-    return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${r} ${r} 0 ${large} 0 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`;
-  }
+  };
+  const polar = (cx, cy, r, deg) => {
+    const rad = deg * Math.PI / 180;
+    return { x: cx + r*Math.cos(rad), y: cy + r*Math.sin(rad) };
+  };
+  const arcPath = (cx, cy, r, aStart, aEnd, sweep=1) => {
+    const s = polar(cx,cy,r,aStart), e = polar(cx,cy,r,aEnd);
+    const da = ((aEnd - aStart) * (sweep?1:-1) + 720) % 360;
+    return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${r} ${r} 0 ${da>180?1:0} ${sweep} ${e.x.toFixed(2)} ${e.y.toFixed(2)}`;
+  };
 
-  // 배경 원
-  svg.appendChild(mk('circle', { cx, cy, r: R+6, fill: 'var(--bg3)', stroke: 'var(--border2)', 'stroke-width': '.5' }));
+  // ─────────────────────────────────────────────────────
+  // A. 고도 반원 게이지 (좌측, cx=80 cy=105 R=68)
+  // ─────────────────────────────────────────────────────
+  const GCX=80, GCY=108, GR=62;
+  const altMin=-10, altRange=100;
+  // 반원: 좌(180°)=−10°, 우(0°)=+90°
+  const angForAlt = alt => 180 - (Math.max(altMin,Math.min(90,alt))-altMin)/altRange*180;
 
-  // 회색 전체 호 (배경 트랙)
-  svg.appendChild(mk('path', {
-    d: arcPath(cx, cy, R, startAngle, endAngle),
-    fill: 'none', stroke: 'rgba(255,255,255,0.08)', 'stroke-width': '7', 'stroke-linecap': 'round'
+  // 배경 원판
+  svg.appendChild(mk('circle',{cx:GCX,cy:GCY,r:GR+12,fill:'var(--bg3)',stroke:'var(--border)','stroke-width':'.5'}));
+
+  // 배경 트랙
+  svg.appendChild(mk('path',{
+    d: arcPath(GCX,GCY,GR, 180,0, 1),
+    fill:'none', stroke:'rgba(128,128,128,0.12)', 'stroke-width':'12','stroke-linecap':'round'
   }));
 
-  // 색깔 채움 호 (현재 고도까지)
-  const fillEnd = angFor(curAlt);
-  if (curAlt > minAlt) {
-    svg.appendChild(mk('path', {
-      d: arcPath(cx, cy, R, startAngle, fillEnd),
-      fill: 'none', stroke: color, 'stroke-width': '7', 'stroke-linecap': 'round', opacity: '.85'
+  // 채움 호
+  if(curAlt > altMin){
+    svg.appendChild(mk('path',{
+      d: arcPath(GCX,GCY,GR, 180, angForAlt(curAlt), 1),
+      fill:'none', stroke:color, 'stroke-width':'12','stroke-linecap':'round', opacity:'.88'
     }));
   }
 
-  // 지평선 마커 (0° 위치)
-  const horizAng = angFor(0);
-  const hi = polarXY(cx, cy, R - 6, horizAng);
-  const ho = polarXY(cx, cy, R + 6, horizAng);
-  svg.appendChild(mk('line', { x1: hi.x.toFixed(2), y1: hi.y.toFixed(2), x2: ho.x.toFixed(2), y2: ho.y.toFixed(2), stroke: 'rgba(255,255,255,0.3)', 'stroke-width': '1.5' }));
+  // 남중 마커
+  if(maxAlt !== null){
+    const ma=angForAlt(maxAlt);
+    const mp1=polar(GCX,GCY,GR-8,ma), mp2=polar(GCX,GCY,GR+8,ma);
+    svg.appendChild(mk('line',{x1:mp1.x.toFixed(2),y1:mp1.y.toFixed(2),
+      x2:mp2.x.toFixed(2),y2:mp2.y.toFixed(2),
+      stroke:'var(--accent)','stroke-width':'2','stroke-linecap':'round'}));
+  }
 
-  // 눈금 (0°, 30°, 60°, 90°)
-  [0, 30, 60, 90].forEach(alt => {
-    const ang = angFor(alt);
-    const inner = polarXY(cx, cy, R - 5, ang);
-    const outer = polarXY(cx, cy, R + 1, ang);
-    const lp    = polarXY(cx, cy, R + 10, ang);
-    svg.appendChild(mk('line', { x1: inner.x.toFixed(2), y1: inner.y.toFixed(2), x2: outer.x.toFixed(2), y2: outer.y.toFixed(2), stroke: 'rgba(255,255,255,0.25)', 'stroke-width': '1' }));
-    const t = mk('text', { x: lp.x.toFixed(2), y: lp.y.toFixed(2), 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '7', fill: 'rgba(255,255,255,0.35)', 'font-family': 'sans-serif' }, alt + '°');
-    svg.appendChild(t);
+  // 눈금
+  [-10,0,15,30,45,60,75,90].forEach(alt => {
+    const ang=angForAlt(alt), isMaj=(alt%30===0||alt===0);
+    const ri=polar(GCX,GCY,GR-5,ang), ro=polar(GCX,GCY,GR+5,ang);
+    svg.appendChild(mk('line',{x1:ri.x.toFixed(2),y1:ri.y.toFixed(2),
+      x2:ro.x.toFixed(2),y2:ro.y.toFixed(2),
+      stroke:isMaj?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.1)',
+      'stroke-width':isMaj?'1.5':'0.8'}));
+    if(isMaj && alt>=0){
+      const rl=polar(GCX,GCY,GR+16,ang);
+      svg.appendChild(mk('text',{x:rl.x.toFixed(2),y:rl.y.toFixed(2),
+        'text-anchor':'middle','dominant-baseline':'middle','font-size':'8',
+        fill:'rgba(255,255,255,0.35)','font-family':'sans-serif'},alt+'°'));
+    }
   });
 
-  // 바늘 (현재 고도)
-  const needleAng = angFor(curAlt);
-  const np = polarXY(cx, cy, R - 8, needleAng);
-  svg.appendChild(mk('line', { x1: cx, y1: cy, x2: np.x.toFixed(2), y2: np.y.toFixed(2), stroke: color, 'stroke-width': '2.5', 'stroke-linecap': 'round' }));
+  // 지평선 수평선
+  svg.appendChild(mk('line',{x1:GCX-GR-14,y1:GCY,x2:GCX+GR+14,y2:GCY,
+    stroke:'rgba(255,255,255,0.1)','stroke-width':'0.8','stroke-dasharray':'4 3'}));
 
-  // 남중(최대) 마커
-  if (maxAlt !== null) {
-    const ma = angFor(maxAlt);
-    const mp1 = polarXY(cx, cy, R - 3, ma);
-    const mp2 = polarXY(cx, cy, R + 3, ma);
-    svg.appendChild(mk('line', { x1: mp1.x.toFixed(2), y1: mp1.y.toFixed(2), x2: mp2.x.toFixed(2), y2: mp2.y.toFixed(2), stroke: 'var(--accent)', 'stroke-width': '2', 'stroke-linecap': 'round' }));
+  // 바늘
+  const needleAng=angForAlt(curAlt);
+  const np=polar(GCX,GCY,GR-12,needleAng);
+  svg.appendChild(mk('line',{x1:GCX,y1:GCY,x2:np.x.toFixed(2),y2:np.y.toFixed(2),
+    stroke:color,'stroke-width':'2.5','stroke-linecap':'round'}));
+
+  // 중심
+  svg.appendChild(mk('circle',{cx:GCX,cy:GCY,r:'4.5',fill:color,stroke:'var(--bg3)','stroke-width':'1.5'}));
+
+  // 고도 수치
+  const sign=curAlt>=0?'+':'';
+  svg.appendChild(mk('text',{x:GCX,y:GCY-26,'text-anchor':'middle','font-size':'18',
+    'font-weight':'700',fill:color,'font-family':"'Noto Sans KR',sans-serif"},sign+curAlt.toFixed(1)+'°'));
+  svg.appendChild(mk('text',{x:GCX,y:GCY-12,'text-anchor':'middle','font-size':'7.5',
+    fill:'var(--muted)','font-family':'sans-serif'},'ALTITUDE'));
+
+  // 레이블 끝점
+  svg.appendChild(mk('text',{x:GCX-GR-14,y:GCY+12,'text-anchor':'middle','font-size':'7',
+    fill:'rgba(255,255,255,0.25)','font-family':'sans-serif'},'-10°'));
+  svg.appendChild(mk('text',{x:GCX+GR+14,y:GCY+12,'text-anchor':'middle','font-size':'7',
+    fill:'rgba(255,255,255,0.25)','font-family':'sans-serif'},'90°'));
+
+  // ─────────────────────────────────────────────────────
+  // B. 방위 나침반 (우측, cx=195 cy=100 R=55)
+  // ─────────────────────────────────────────────────────
+  const CCX=192, CCY=105, CR=55;
+
+  // 배경
+  svg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:CR+10,fill:'var(--bg3)',stroke:'var(--border)','stroke-width':'.5'}));
+  svg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:CR,fill:'none',stroke:'rgba(255,255,255,0.06)','stroke-width':'0.5'}));
+
+  // 눈금 (36개)
+  for(let i=0;i<36;i++){
+    const a=i*10-90, isMaj=(i%9===0), isMid=(i%3===0);
+    const ri=polar(CCX,CCY,CR-(isMaj?6:isMid?4:2),a);
+    const ro=polar(CCX,CCY,CR+(isMaj?6:isMid?3:1),a);
+    svg.appendChild(mk('line',{x1:ri.x.toFixed(2),y1:ri.y.toFixed(2),
+      x2:ro.x.toFixed(2),y2:ro.y.toFixed(2),
+      stroke:isMaj?'rgba(255,255,255,0.3)':isMid?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.07)',
+      'stroke-width':isMaj?'1.5':isMid?'0.8':'0.5'}));
+  }
+
+  // N/S/E/W 레이블
+  [{a:0,l:'N',bold:true},{a:90,l:'E'},{a:180,l:'S'},{a:270,l:'W'}].forEach(({a,l,bold})=>{
+    const tp=polar(CCX,CCY,CR+18,a-90);
+    svg.appendChild(mk('text',{x:tp.x.toFixed(2),y:tp.y.toFixed(2),
+      'text-anchor':'middle','dominant-baseline':'middle','font-size':'9',
+      'font-weight':bold?'700':'400',
+      fill:bold?'var(--text)':'rgba(255,255,255,0.4)',
+      'font-family':"'Noto Sans KR',sans-serif"},l));
+  });
+
+  // 출 방위 바늘 (초록)
+  if(riseAz!=null){
+    const rp=polar(CCX,CCY,CR-6,riseAz-90);
+    svg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:rp.x.toFixed(2),y2:rp.y.toFixed(2),
+      stroke:'var(--rise)','stroke-width':'1.5','stroke-linecap':'round',opacity:'.85'}));
+    svg.appendChild(mk('circle',{cx:rp.x.toFixed(2),cy:rp.y.toFixed(2),r:'3.5',fill:'var(--rise)',opacity:'.9'}));
+  }
+
+  // 몰 방위 바늘 (주황)
+  if(setAz!=null){
+    const sp=polar(CCX,CCY,CR-6,setAz-90);
+    svg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:sp.x.toFixed(2),y2:sp.y.toFixed(2),
+      stroke:'var(--set)','stroke-width':'1.5','stroke-linecap':'round',opacity:'.85'}));
+    svg.appendChild(mk('circle',{cx:sp.x.toFixed(2),cy:sp.y.toFixed(2),r:'3.5',fill:'var(--set)',opacity:'.9'}));
+  }
+
+  // 현재 방위 바늘 (천체 색상, 굵게)
+  if(curAz!=null){
+    const cp=polar(CCX,CCY,CR-8,curAz-90);
+    const ct=polar(CCX,CCY,CR-2,curAz-90); // 바늘 끝
+    // 화살표 몸통
+    svg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:ct.x.toFixed(2),y2:ct.y.toFixed(2),
+      stroke:color,'stroke-width':'2.5','stroke-linecap':'round'}));
+    // 머리 점
+    svg.appendChild(mk('circle',{cx:ct.x.toFixed(2),cy:ct.y.toFixed(2),r:'4.5',fill:color}));
+    // 방위각 텍스트 (중앙)
+    svg.appendChild(mk('text',{x:CCX,y:CCY-10,'text-anchor':'middle','font-size':'12',
+      'font-weight':'700',fill:color,'font-family':"'Noto Sans KR',sans-serif"},
+      Math.round(curAz)+'°'));
+    svg.appendChild(mk('text',{x:CCX,y:CCY+2,'text-anchor':'middle','font-size':'8',
+      fill:'var(--muted)','font-family':'sans-serif'},dirLabel(curAz)));
+    svg.appendChild(mk('text',{x:CCX,y:CCY+12,'text-anchor':'middle','font-size':'6.5',
+      fill:'rgba(255,255,255,0.25)','font-family':'sans-serif'},'AZIMUTH'));
   }
 
   // 중심 도트
-  svg.appendChild(mk('circle', { cx, cy, r: '4', fill: color, stroke: 'var(--bg3)', 'stroke-width': '1.5' }));
+  svg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:'4',fill:'var(--bg3)',stroke:'var(--border2)','stroke-width':'1'}));
 
-  // 중앙 고도 텍스트
-  const sign = curAlt >= 0 ? '+' : '';
-  const tEl = mk('text', { x: cx, y: cy - 14, 'text-anchor': 'middle', 'font-size': '13', 'font-weight': '600', fill: color, 'font-family': "'Noto Sans KR',sans-serif" }, sign + curAlt.toFixed(1) + '°');
-  svg.appendChild(tEl);
-  const labelEl = mk('text', { x: cx, y: cy - 4, 'text-anchor': 'middle', 'font-size': '7', fill: 'var(--muted)', 'font-family': 'sans-serif' }, 'ALTITUDE');
-  svg.appendChild(labelEl);
-
-  // 텍스트 stats 업데이트
-  const sign2 = curAlt >= 0 ? '+' : '';
-  const el = id => document.getElementById(prefix + '-' + id);
-  if (el('altCur'))    el('altCur').textContent    = sign2 + curAlt.toFixed(1) + '°';
-  if (el('altMax'))    el('altMax').textContent    = maxAlt !== null ? '+' + maxAlt.toFixed(1) + '°' : '—';
-  if (el('altRise'))   el('altRise').textContent   = riseAlt !== null ? riseAlt.toFixed(1) + '°' : '—';
-  if (el('altSet'))    el('altSet').textContent    = setAlt  !== null ? setAlt.toFixed(1) + '°'  : '—';
-  if (el('altStatus')) el('altStatus').textContent = curAlt > 0 ? (curAlt > 30 ? '관측 적합 ✓' : '낮은 고도') : '지평선 아래';
-  if (el('altStatus')) el('altStatus').style.color = curAlt > 30 ? 'var(--rise)' : curAlt > 0 ? 'var(--accent)' : 'var(--muted)';
+  // ─────────────────────────────────────────────────────
+  // C. 통계 텍스트 업데이트
+  // ─────────────────────────────────────────────────────
+  const el = id => document.getElementById(prefix+'-'+id);
+  const sign2=curAlt>=0?'+':'';
+  if(el('altCur'))    el('altCur').textContent    = sign2+curAlt.toFixed(1)+'°';
+  if(el('altMax'))    el('altMax').textContent    = maxAlt!==null ? '+'+maxAlt.toFixed(1)+'°' : '—';
+  if(el('altRise'))   el('altRise').textContent   = riseAlt!==null ? riseAlt.toFixed(1)+'°'  : '—';
+  if(el('altSet'))    el('altSet').textContent    = setAlt!==null  ? setAlt.toFixed(1)+'°'   : '—';
+  if(el('altStatus')){
+    el('altStatus').textContent = curAlt>30?'관측 적합 ✓':curAlt>0?'낮은 고도':'지평선 아래';
+    el('altStatus').style.color = curAlt>30?'var(--rise)':curAlt>0?color:'var(--muted)';
+  }
+  if(el('altAzVal'))  el('altAzVal').textContent  = curAz!=null ? Math.round(curAz)+'° '+dirLabel(curAz) : '—';
 }
+
 
 function drawArc(svgId, alts, color){
   const svg=document.getElementById(svgId);
@@ -1453,104 +1489,6 @@ function drawCompass(prefix, nowAz, riseAz, setAz, color, nowAlt){
   document.getElementById(prefix+'-cRise').textContent=fmt(riseAz);
   document.getElementById(prefix+'-cSet').textContent=fmt(setAz);
 
-  // ── 앙각 게이지 (나침반 테두리 바깥 반원 호) ─────────────────
-  if(nowAlt !== undefined && nowAlt !== null){
-    const alt = nowAlt;
-    const cx=80, cy=80;
-    const azRad = toRad(nowAz);
-    const sinAz = Math.sin(azRad), cosAz = Math.cos(azRad);
-
-    // 바늘 방향 기준으로 좌우 ±90° 범위에 반원 게이지 그리기
-    // 게이지 위치: 나침반 중앙에서 바늘 방향 r=56 지점을 중심으로 하는 소형 반원
-    // r=76 (눈금 바깥) 위치에 얇은 호 게이지
-    const outerR = 76, innerR = 70;
-    // 앙각 -30°~90° → 호 각도 0°~120° (바늘 방향 기준 좌우 대칭)
-    // 게이지는 바늘 끝 기준 반원: 시작=바늘방향-90°, 끝=바늘방향+90°
-    // 현재 앙각 위치: 0°(수평)=바늘방향-90°, 90°(수직)=바늘방향
-    const altClamped = Math.max(0, Math.min(90, alt));
-    // 바늘 방향 왼쪽 90° 지점이 수평(0°), 바늘 방향이 천정(90°)
-    // 즉 각도 = (azDeg - 90) + altClamped
-    const gaugeStartDeg = nowAz - 90; // 0° 고도 방향
-    const gaugeEndDeg   = nowAz;      // 90° 고도 방향 (천정쪽)
-    const gaugeNowDeg   = nowAz - 90 + altClamped; // 현재 고도 위치
-
-    function polarPt(r, deg){
-      const rad = toRad(deg);
-      return [(cx + r*Math.sin(rad)).toFixed(2), (cy - r*Math.cos(rad)).toFixed(2)];
-    }
-    function arcD(r, startDeg, endDeg){
-      const s = polarPt(r, startDeg), e = polarPt(r, endDeg);
-      const da = ((endDeg - startDeg) % 360 + 360) % 360;
-      const large = da > 180 ? 1 : 0;
-      return `M ${s[0]} ${s[1]} A ${r} ${r} 0 ${large} 1 ${e[0]} ${e[1]}`;
-    }
-
-    // 배경 트랙 호 (회색, -90°~0° 범위)
-    const trackEl = document.getElementById(prefix+'-altHorizLine');
-    if(trackEl){
-      // line 대신 path로 재활용
-      trackEl.setAttribute('d', arcD(73, gaugeStartDeg, gaugeEndDeg));
-      trackEl.setAttribute('stroke', 'rgba(255,255,255,0.1)');
-      trackEl.setAttribute('stroke-width', '5');
-      trackEl.setAttribute('fill', 'none');
-      trackEl.setAttribute('stroke-linecap', 'round');
-      // line → path 로 바꾸기 위해 tagName 확인
-      // (SVG line 이므로 d 속성 무시됨 → altArc에서 처리)
-    }
-
-    // 메인 게이지 호 (현재 고도까지)
-    const arcEl = document.getElementById(prefix+'-altArc');
-    if(arcEl){
-      if(alt > 0){
-        arcEl.setAttribute('d', arcD(73, gaugeStartDeg, gaugeNowDeg));
-        arcEl.setAttribute('stroke', color);
-        arcEl.setAttribute('stroke-width', '5');
-        arcEl.setAttribute('fill', 'none');
-        arcEl.setAttribute('stroke-linecap', 'round');
-        arcEl.setAttribute('opacity', '0.85');
-      } else {
-        arcEl.setAttribute('d', '');
-      }
-    }
-
-    // 게이지 배경 트랙: altHorizLine을 path로 바꿔서 활용
-    // (SVG line 태그라 d 무효 → 별도 처리는 SVG init에서)
-
-    // 0° 기준 마커 (수평선 위치)
-    const hlEl = document.getElementById(prefix+'-altHorizLine');
-    if(hlEl){
-      const sp = polarPt(69, gaugeStartDeg), ep = polarPt(77, gaugeStartDeg);
-      hlEl.setAttribute('x1', sp[0]); hlEl.setAttribute('y1', sp[1]);
-      hlEl.setAttribute('x2', ep[0]); hlEl.setAttribute('y2', ep[1]);
-      hlEl.setAttribute('stroke', 'rgba(255,255,255,0.4)');
-      hlEl.setAttribute('stroke-width', '1.5');
-      hlEl.removeAttribute('stroke-dasharray');
-      hlEl.removeAttribute('d');
-    }
-
-    // 현재 고도 마커 점
-    const [mpx, mpy] = polarPt(73, gaugeNowDeg);
-    const lblEl = document.getElementById(prefix+'-altLabel');
-    if(lblEl){
-      // 마커 점 근처에 수치 표시
-      const [lpx, lpy] = polarPt(84, gaugeNowDeg);
-      lblEl.setAttribute('x', lpx); lblEl.setAttribute('y', lpy);
-      lblEl.textContent = (alt>=0?'+':'')+alt.toFixed(1)+'°';
-      lblEl.setAttribute('fill', alt>0 ? color : 'rgba(180,180,180,0.6)');
-      lblEl.setAttribute('font-size', '7.5');
-    }
-
-    // 지평선 아래 표시
-    const belowEl = document.getElementById(prefix+'-belowLabel');
-    if(belowEl) belowEl.setAttribute('display', alt<0?'block':'none');
-
-    // 정보 행 업데이트
-    const altInfoEl = document.getElementById(prefix+'-compassAlt');
-    if(altInfoEl){
-      altInfoEl.textContent = (alt>=0?'+':'')+alt.toFixed(1)+'°';
-      altInfoEl.style.color = alt>30?'var(--rise)':alt>0?color:'var(--muted)';
-    }
-  }
 }
 
 function renderTimeline(prefix, rT, trT, sT, nowMin, color){
@@ -1641,7 +1579,7 @@ function runMoon(now, kstNow, jdNow, jdMid, nowMin){
   drawArc('moon-arcSvg', altArray(jdMid,getEq), '#c9a84c');
   const moonRiseAlt = riseJD ? (() => { const e=eclToEquat(moonPosition(riseJD).lon, moonPosition(riseJD).lat, riseJD); return altAz(e.ra,e.dec,lstDeg(riseJD,LNG),LAT).alt; })() : null;
   const moonSetAlt  = setJD  ? (() => { const e=eclToEquat(moonPosition(setJD).lon,  moonPosition(setJD).lat,  setJD);  return altAz(e.ra,e.dec,lstDeg(setJD,LNG),LAT).alt; })() : null;
-  drawAltimeter('moon', pos.alt, transitEl, moonRiseAlt, moonSetAlt, '#c9a84c');
+  drawAltimeter('moon', pos.alt, transitEl, moonRiseAlt, moonSetAlt, '#c9a84c', pos.az, riseAzV, setAzV);
   drawCompass('moon',pos.az,riseAzV,setAzV,'#c9a84c',pos.alt);
   document.getElementById('moon-cAlt').textContent=(pos.alt>=0?'+':'')+pos.alt.toFixed(1)+'°';
 
@@ -1701,7 +1639,7 @@ function runPlanet(name, jdNow, jdMid, nowMin){
   drawArc(name+'-arcSvg', altArray(jdMid,getEq), color);
   const pRiseAlt = riseJD ? altAz(getEq(riseJD).ra, getEq(riseJD).dec, lstDeg(riseJD,LNG), LAT).alt : null;
   const pSetAlt  = setJD  ? altAz(getEq(setJD).ra,  getEq(setJD).dec,  lstDeg(setJD,LNG),  LAT).alt : null;
-  drawAltimeter(name, pos.alt, transitEl, pRiseAlt, pSetAlt, color);
+  drawAltimeter(name, pos.alt, transitEl, pRiseAlt, pSetAlt, color, pos.az, rAz, sAz);
   drawCompass(name,pos.az,rAz,sAz,color,pos.alt);
   document.getElementById(name+'-cAlt').textContent=(pos.alt>=0?'+':'')+pos.alt.toFixed(1)+'°';
 
