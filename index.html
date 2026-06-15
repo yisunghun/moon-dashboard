@@ -22,7 +22,7 @@
   --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
   --text:#e8e4d9;--muted:#6b7290;
   --rise:#4a9e6b;--set:#c47a3a;--accent:#c9a84c;--accent2:#4a7fc1;
-  --moon:#c9a84c;--jupiter:#c8a878;--venus:#e8c4a0;--saturn:#b8a86a;
+  --moon:#c9a84c;--jupiter:#c8a878;--venus:#e8c4a0;--saturn:#b8a86a;--mars:#d4674a;
   --font-sans:'Noto Sans KR',sans-serif;
   --font-serif:'Noto Serif KR',serif;
   --r:14px;--r-sm:8px;
@@ -273,6 +273,9 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
   </button>
   <button class="tab-btn" onclick="switchTab('saturn')" id="tab-saturn" role="tab">
     <span class="tab-icon">💫</span><span>토성</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('mars')" id="tab-mars" role="tab">
+    <span class="tab-icon">🔴</span><span>화성</span>
   </button>
 </div>
 
@@ -693,6 +696,95 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
   </div>
 </div>
 
+<!-- mars -->
+<div class="tab-panel" id="panel-mars">
+  <div class="hero"><div class="hero-icon">🔴</div>
+    <div class="hero-info">
+      <div class="phase-name" id="mars-name">화성</div>
+      <div class="phase-pct" id="mars-mag">등급 —</div>
+      <div class="horizon-badge" id="mars-badge"><span class="badge-dot" id="mars-badgeDot"></span><span id="mars-horizonText">—</span></div>
+      <div class="next-event" id="mars-nextEvent">—</div>
+    </div>
+  </div>
+  <div class="grid3">
+    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--rise)"></span>출</div><div class="card-value" id="mars-riseVal">—</div><div class="card-sub" id="mars-riseAz">방위 —</div></div>
+    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--accent)"></span>남중</div><div class="card-value" id="mars-transitVal">—</div><div class="card-sub" id="mars-transitEl">고도 —</div></div>
+    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--set)"></span>몰</div><div class="card-value" id="mars-setVal">—</div><div class="card-sub" id="mars-setAz">방위 —</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div class="card-label">현재 위치</div>
+      <div class="pos-row">
+        <div class="pos-item"><div class="pi-label">고도</div><div class="pi-val" id="mars-curAlt">—</div></div>
+        <div class="pos-item"><div class="pi-label">방위각</div><div class="pi-val" id="mars-curAz">—</div></div>
+        <div class="pos-item"><div class="pi-label">거리(AU)</div><div class="pi-val" id="mars-curDist">—</div></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-label">상태</div>
+      <div class="badges-row" id="mars-badges"></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px" id="mars-note">—</div>
+    </div>
+  </div>
+  <div class="tl-card"><div class="tl-title">오늘의 궤적 (KST)</div>
+    <div class="tl-track"><div class="tl-fill" id="mars-tlFill" style="background:var(--mars)"></div><div class="tl-now" id="mars-tlNow"></div></div>
+    <div class="tl-axis"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
+    <div class="tl-events" id="mars-tlEvents"></div>
+  </div>
+  <div class="altimeter-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+      <div class="altimeter-title" style="margin-bottom:0">고도계</div>
+      <button class="ar-launch-btn" onclick="openAR('mars','화성','#d4674a')">📷 AR 보기</button>
+    </div>
+    <div class="altimeter-body">
+      <div class="altimeter-svg-wrap">
+        <svg id="mars-altSvg" width="260" height="200" viewBox="0 0 260 200" style="max-width:100%"></svg>
+      </div>
+      <div class="altimeter-stats">
+        <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="mars-altCur" style="color:#d4674a">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">방위각</span><span class="alt-stat-val" id="mars-altAzVal">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">최대 고도 (남중)</span><span class="alt-stat-val" id="mars-altMax">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">출 고도</span><span class="alt-stat-val" style="color:var(--rise)" id="mars-altRise">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">몰 고도</span><span class="alt-stat-val" style="color:var(--set)" id="mars-altSet">—</span></div>
+        <div class="alt-stat-row"><span class="alt-stat-label">상태</span><span class="alt-stat-val" id="mars-altStatus">—</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="arc-card"><div class="arc-title">고도 곡선 (1시간 간격)</div><svg class="arc-svg" viewBox="0 0 600 150" id="mars-arcSvg"></svg></div>
+  <div class="compass-card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="compass-title" style="margin-bottom:0">방위 나침반</div><button class="compass-heading-btn" id="mars-headingBtn" onclick="toggleHeading('saturn')">🧭 진행방향 켜기</button></div>
+    <div class="compass-layout">
+      <svg id="mars-compassSvg" width="150" height="150" viewBox="0 0 160 160">
+        <circle cx="80" cy="80" r="72" fill="none" stroke="var(--border2)" stroke-width=".5"/>
+        <circle cx="80" cy="80" r="60" fill="none" stroke="var(--border)" stroke-width=".5"/>
+        <g id="mars-compassTicks"></g>
+        <text x="80" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text)" font-family="'Noto Sans KR',sans-serif">N</text>
+        <text x="80" y="153" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="'Noto Sans KR',sans-serif">S</text>
+        <text x="152" y="84" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="'Noto Sans KR',sans-serif">E</text>
+        <text x="8" y="84" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="'Noto Sans KR',sans-serif">W</text>
+        <line id="mars-riseNeedle" x1="80" y1="80" x2="80" y2="26" stroke="var(--rise)" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+        <circle id="mars-riseDot" cx="80" cy="26" r="4" fill="var(--rise)" opacity=".85"/>
+        <line id="mars-setNeedle" x1="80" y1="80" x2="80" y2="26" stroke="var(--set)" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+        <circle id="mars-setDot" cx="80" cy="26" r="4" fill="var(--set)" opacity=".85"/>
+        <line id="mars-nowNeedle" x1="80" y1="80" x2="80" y2="22" stroke="var(--mars)" stroke-width="2.5" stroke-linecap="round"/>
+        <circle id="mars-nowDot" cx="80" cy="22" r="5" fill="var(--mars)"/>
+        <!-- 진행방향 화살표 (heading) -->
+        <g id="mars-headingG" opacity="0" style="transition:opacity .3s">
+          <line id="mars-headingLine" x1="80" y1="80" x2="80" y2="18" stroke="#4a7fc1" stroke-width="3" stroke-linecap="round"/>
+          <polygon id="mars-headingArrow" points="80,10 74,24 86,24" fill="#4a7fc1"/>
+          <line id="mars-headingTail" x1="80" y1="80" x2="80" y2="96" stroke="#4a7fc1" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+        </g>
+        <circle cx="80" cy="80" r="4" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1"/>
+      </svg>
+      <div class="compass-info">
+        <div class="cinfo-row"><span class="cinfo-label">🟡 현재</span><span class="cinfo-val" style="color:var(--mars)" id="mars-cNow">—</span></div>
+        <div class="cinfo-row"><span class="cinfo-label">🟢 출</span><span class="cinfo-val rise-col" id="mars-cRise">—</span></div>
+        <div class="cinfo-row"><span class="cinfo-label">🟠 몰</span><span class="cinfo-val set-col" id="mars-cSet">—</span></div>
+        <div class="cinfo-row"><span class="cinfo-label">고도</span><span class="cinfo-val" id="mars-cAlt">—</span></div>
+        <div class="cinfo-row"><span class="cinfo-label">🔺 앙각</span><span class="cinfo-val" id="mars-cAltAngle" style="color:rgba(255,255,255,0.7)">—</span></div>
+        <div class="heading-row" id="mars-headingRow" style="display:none"><span class="cinfo-label">📱 진행방향</span><span class="heading-val" id="mars-headingVal">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ 현재 위치 미니맵 (공통, 탭 밖) ══ -->
 <div class="locmap-card">
   <div class="locmap-header">
@@ -893,12 +985,18 @@ function planetLon(jd, name){
     const M=norm360(317.0207+1222.1138*T);
     return norm360(L+6.3585*sinD(M)+0.2204*sinD(2*M)-0.0106*sinD(3*M));
   }
+  if(name==='mars'){
+    const L=norm360(355.4330+689.0595*T);
+    const M=norm360(19.3730+689.0480*T);
+    return norm360(L+10.6912*sinD(M)+0.6228*sinD(2*M)+0.0503*sinD(3*M));
+  }
 }
 function planetDist(jd, name){
   const T=(jd-2451545)/36525;
   if(name==='venus')   return 0.7233*(1-0.00677*0.00677)/(1+0.00677*cosD(norm360(212.2831+58517.8039*T)));
   if(name==='jupiter') return 5.2026*(1-0.04849*0.04849)/(1+0.04849*cosD(norm360(20.9154+3034.9057*T)));
   if(name==='saturn')  return 9.5549*(1-0.05551*0.05551)/(1+0.05551*cosD(norm360(317.0207+1222.1138*T)));
+  if(name==='mars')    return 1.5237*(1-0.09341*0.09341)/(1+0.09341*cosD(norm360(19.3730+689.0480*T)));
 }
 
 // 행성 적경/적위 (황도→적도 변환, 지구 중심 보정 포함)
@@ -1605,8 +1703,8 @@ function runMoon(now, kstNow, jdNow, jdMid, nowMin){
 // ═══════════════════════════════════════════════════════
 // 행성 렌더 (공용)
 // ═══════════════════════════════════════════════════════
-const PLANET_COLORS={jupiter:'#c8a878',venus:'#e8c4a0',saturn:'#b8a86a'};
-const PLANET_LABELS={jupiter:'목성',venus:'금성',saturn:'토성'};
+const PLANET_COLORS={jupiter:'#c8a878',venus:'#e8c4a0',saturn:'#b8a86a',mars:'#d4674a'};
+const PLANET_LABELS={jupiter:'목성',venus:'금성',saturn:'토성',mars:'화성'};
 
 function runPlanet(name, jdNow, jdMid, nowMin){
   const color=PLANET_COLORS[name];
@@ -1678,6 +1776,7 @@ function run(){
   runPlanet('jupiter',jdNow,jdMid,nowMin);
   runPlanet('venus',jdNow,jdMid,nowMin);
   runPlanet('saturn',jdNow,jdMid,nowMin);
+  runPlanet('mars',jdNow,jdMid,nowMin);
 }
 
 // ═══════════════════════════════════════════════════════
