@@ -105,6 +105,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;margin-
   display: flex; flex-direction: column; gap: 0.75rem;
 }
 .altimeter-svg-wrap { width: 100%; display: flex; justify-content: center; }
+  .altimeter-svg-combined { width: 100%; display: flex; justify-content: center; margin-bottom: 10px; }
 .altimeter-stats {
   display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px;
 }
@@ -330,13 +331,8 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
       <button class="ar-launch-btn" onclick="openAR('moon','달','#c9a84c')">📷 AR 보기</button>
     </div>
     <div class="altimeter-body">
-      <div style="display:flex;gap:12px;align-items:center;justify-content:center">
-        <div class="altimeter-svg-wrap" style="width:auto">
-          <svg id="moon-altSvg" width="150" height="150" viewBox="0 0 150 150" style="max-width:150px"></svg>
-        </div>
-        <div class="altimeter-svg-wrap" style="width:auto">
-          <svg id="moon-azSvg" width="150" height="150" viewBox="0 0 150 150" style="max-width:150px"></svg>
-        </div>
+      <div class="altimeter-svg-combined">
+        <svg id="moon-altSvg" viewBox="0 0 280 300" style="width:100%;max-width:320px;height:auto"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="moon-altCur" style="color:#c9a84c">—</span></div>
@@ -473,13 +469,8 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
       <button class="ar-launch-btn" onclick="openAR('jupiter','목성','#c8a878')">📷 AR 보기</button>
     </div>
     <div class="altimeter-body">
-      <div style="display:flex;gap:12px;align-items:center;justify-content:center">
-        <div class="altimeter-svg-wrap" style="width:auto">
-          <svg id="jupiter-altSvg" width="150" height="150" viewBox="0 0 150 150" style="max-width:150px"></svg>
-        </div>
-        <div class="altimeter-svg-wrap" style="width:auto">
-          <svg id="jupiter-azSvg" width="150" height="150" viewBox="0 0 150 150" style="max-width:150px"></svg>
-        </div>
+      <div class="altimeter-svg-combined">
+        <svg id="jupiter-altSvg" viewBox="0 0 280 300" style="width:100%;max-width:320px;height:auto"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="jupiter-altCur" style="color:#c8a878">—</span></div>
@@ -567,13 +558,8 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
       <button class="ar-launch-btn" onclick="openAR('venus','금성','#e8c4a0')">📷 AR 보기</button>
     </div>
     <div class="altimeter-body">
-      <div style="display:flex;gap:12px;align-items:center;justify-content:center">
-        <div class="altimeter-svg-wrap" style="width:auto">
-          <svg id="venus-altSvg" width="150" height="150" viewBox="0 0 150 150" style="max-width:150px"></svg>
-        </div>
-        <div class="altimeter-svg-wrap" style="width:auto">
-          <svg id="venus-azSvg" width="150" height="150" viewBox="0 0 150 150" style="max-width:150px"></svg>
-        </div>
+      <div class="altimeter-svg-combined">
+        <svg id="venus-altSvg" viewBox="0 0 280 300" style="width:100%;max-width:320px;height:auto"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="venus-altCur" style="color:#e8c4a0">—</span></div>
@@ -661,13 +647,8 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
       <button class="ar-launch-btn" onclick="openAR('saturn','토성','#b8a86a')">📷 AR 보기</button>
     </div>
     <div class="altimeter-body">
-      <div style="display:flex;gap:12px;align-items:center;justify-content:center">
-        <div class="altimeter-svg-wrap" style="width:auto">
-          <svg id="saturn-altSvg" width="150" height="150" viewBox="0 0 150 150" style="max-width:150px"></svg>
-        </div>
-        <div class="altimeter-svg-wrap" style="width:auto">
-          <svg id="saturn-azSvg" width="150" height="150" viewBox="0 0 150 150" style="max-width:150px"></svg>
-        </div>
+      <div class="altimeter-svg-combined">
+        <svg id="saturn-altSvg" viewBox="0 0 280 300" style="width:100%;max-width:320px;height:auto"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="saturn-altCur" style="color:#b8a86a">—</span></div>
@@ -755,13 +736,8 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
       <button class="ar-launch-btn" onclick="openAR('mars','화성','#d4674a')">📷 AR 보기</button>
     </div>
     <div class="altimeter-body">
-      <div style="display:flex;gap:12px;align-items:center;justify-content:center">
-        <div class="altimeter-svg-wrap" style="width:auto">
-          <svg id="mars-altSvg" width="150" height="150" viewBox="0 0 150 150" style="max-width:150px"></svg>
-        </div>
-        <div class="altimeter-svg-wrap" style="width:auto">
-          <svg id="mars-azSvg" width="150" height="150" viewBox="0 0 150 150" style="max-width:150px"></svg>
-        </div>
+      <div class="altimeter-svg-combined">
+        <svg id="mars-altSvg" viewBox="0 0 280 300" style="width:100%;max-width:320px;height:auto"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="mars-altCur" style="color:#d4674a">—</span></div>
@@ -1080,10 +1056,15 @@ function altArray(jdMid, getEquat){
 // ═══════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════
-// 고도계 렌더러 (고도 게이지 + 방위 나침반 통합)
+// 고도계 렌더러 (단일 SVG: 고도 게이지 위 + 나침반 아래)
+// viewBox 0 0 280 300
 // ═══════════════════════════════════════════════════════
 function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, riseAz, setAz) {
+  const svg = document.getElementById(prefix + '-altSvg');
+  if (!svg) return;
   const ns = 'http://www.w3.org/2000/svg';
+  svg.innerHTML = '';
+
   const mk = (tag, attrs, txt) => {
     const el = document.createElementNS(ns, tag);
     Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k,v));
@@ -1091,181 +1072,171 @@ function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, ri
     return el;
   };
   const polar = (cx, cy, r, deg) => {
+    const rad = (deg - 90) * Math.PI / 180;  // 0°=위쪽 기준
+    return { x: +(cx + r * Math.cos(rad)).toFixed(2),
+             y: +(cy + r * Math.sin(rad)).toFixed(2) };
+  };
+  const polarAlt = (cx, cy, r, deg) => {
+    // 고도 게이지용: 180°(좌)=−10°, 0°(우)=90°
     const rad = deg * Math.PI / 180;
-    return { x: cx + r*Math.cos(rad), y: cy + r*Math.sin(rad) };
+    return { x: +(cx + r * Math.cos(rad)).toFixed(2),
+             y: +(cy + r * Math.sin(rad)).toFixed(2) };
   };
-  const arcPath = (cx, cy, r, aStart, aEnd) => {
-    const s = polar(cx,cy,r,aStart), e = polar(cx,cy,r,aEnd);
-    const da = ((aEnd - aStart) + 720) % 360;
-    return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${r} ${r} 0 ${da>180?1:0} 1 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`;
+  const sweepArc = (cx, cy, r, aStart, aEnd) => {
+    const s = polarAlt(cx,cy,r,aStart), e = polarAlt(cx,cy,r,aEnd);
+    const da = ((aEnd - aStart) + 360) % 360;
+    return `M ${s.x} ${s.y} A ${r} ${r} 0 ${da>180?1:0} 1 ${e.x} ${e.y}`;
   };
 
   // ─────────────────────────────────────────────────────
-  // A. 고도계 SVG (altSvg) — viewBox 0 0 150 150
+  // A. 고도 반원 게이지  cx=140 cy=148 R=100
+  //    반원: 좌(180°)=−10°, 우(0°)=+90°
   // ─────────────────────────────────────────────────────
-  const altSvg = document.getElementById(prefix + '-altSvg');
-  if (altSvg) {
-    altSvg.innerHTML = '';
-    const GCX=75, GCY=82, GR=55;
-    const altMin=-10, altRange=100;
-    const angForAlt = alt => 180 - (Math.max(altMin,Math.min(90,alt))-altMin)/altRange*180;
+  const GCX=140, GCY=148, GR=100;
+  const altMin=-10, altMax90=90, altRange=100;
+  const angForAlt = alt => {
+    const t = (Math.max(altMin,Math.min(altMax90,alt)) - altMin) / altRange;
+    return 180 - t * 180;   // 180°→0° (좌→우)
+  };
 
-    // 배경 원판
-    altSvg.appendChild(mk('circle',{cx:GCX,cy:GCY,r:GR+12,
-      fill:'var(--bg3)',stroke:'var(--border2)','stroke-width':'.7'}));
+  // 배경 반원 트랙
+  svg.appendChild(mk('path',{
+    d: sweepArc(GCX,GCY,GR, 180, 0),
+    fill:'none', stroke:'rgba(128,128,128,0.13)', 'stroke-width':'14', 'stroke-linecap':'round'
+  }));
 
-    // 배경 트랙
-    altSvg.appendChild(mk('path',{
-      d: arcPath(GCX,GCY,GR, 180,0),
-      fill:'none',stroke:'rgba(128,128,128,0.12)','stroke-width':'11','stroke-linecap':'round'
+  // 채움 호 (현재 고도)
+  if(curAlt > altMin){
+    svg.appendChild(mk('path',{
+      d: sweepArc(GCX,GCY,GR, 180, angForAlt(curAlt)),
+      fill:'none', stroke:color, 'stroke-width':'14', 'stroke-linecap':'round', opacity:'0.88'
     }));
-
-    // 채움 호 (현재 고도)
-    if(curAlt > altMin){
-      altSvg.appendChild(mk('path',{
-        d: arcPath(GCX,GCY,GR, 180, angForAlt(curAlt)),
-        fill:'none',stroke:color,'stroke-width':'11','stroke-linecap':'round',opacity:'.88'
-      }));
-    }
-
-    // 남중 마커 (금색)
-    if(maxAlt !== null){
-      const ma = angForAlt(maxAlt);
-      const p1=polar(GCX,GCY,GR-7,ma), p2=polar(GCX,GCY,GR+7,ma);
-      altSvg.appendChild(mk('line',{
-        x1:p1.x.toFixed(2),y1:p1.y.toFixed(2),x2:p2.x.toFixed(2),y2:p2.y.toFixed(2),
-        stroke:'var(--accent)','stroke-width':'2','stroke-linecap':'round'
-      }));
-    }
-
-    // 눈금
-    [-10,0,15,30,45,60,75,90].forEach(alt => {
-      const ang=angForAlt(alt), isMaj=(alt%30===0||alt===0);
-      const ri=polar(GCX,GCY,GR-4,ang), ro=polar(GCX,GCY,GR+4,ang);
-      altSvg.appendChild(mk('line',{
-        x1:ri.x.toFixed(2),y1:ri.y.toFixed(2),x2:ro.x.toFixed(2),y2:ro.y.toFixed(2),
-        stroke:isMaj?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.1)',
-        'stroke-width':isMaj?'1.5':'0.7'
-      }));
-      if(isMaj && alt>=0){
-        const rl=polar(GCX,GCY,GR+15,ang);
-        altSvg.appendChild(mk('text',{x:rl.x.toFixed(2),y:rl.y.toFixed(2),
-          'text-anchor':'middle','dominant-baseline':'middle','font-size':'7.5',
-          fill:'rgba(255,255,255,0.35)','font-family':'sans-serif'},alt+'°'));
-      }
-    });
-
-    // 지평선 점선
-    altSvg.appendChild(mk('line',{
-      x1:GCX-GR-12,y1:GCY,x2:GCX+GR+12,y2:GCY,
-      stroke:'rgba(255,255,255,0.1)','stroke-width':'0.7','stroke-dasharray':'4 3'
-    }));
-
-    // 바늘
-    const needleAng = angForAlt(curAlt);
-    const np = polar(GCX,GCY,GR-10,needleAng);
-    altSvg.appendChild(mk('line',{
-      x1:GCX,y1:GCY,x2:np.x.toFixed(2),y2:np.y.toFixed(2),
-      stroke:color,'stroke-width':'2.5','stroke-linecap':'round'
-    }));
-    altSvg.appendChild(mk('circle',{cx:GCX,cy:GCY,r:'4',fill:color,stroke:'var(--bg3)','stroke-width':'1.5'}));
-
-    // 고도 수치
-    const sign = curAlt>=0?'+':'';
-    altSvg.appendChild(mk('text',{x:GCX,y:GCY-20,'text-anchor':'middle',
-      'font-size':'17','font-weight':'700',fill:color,
-      'font-family':"'Noto Sans KR',sans-serif"},sign+curAlt.toFixed(1)+'°'));
-    altSvg.appendChild(mk('text',{x:GCX,y:GCY-8,'text-anchor':'middle',
-      'font-size':'7',fill:'var(--muted)','font-family':'sans-serif'},'ALTITUDE'));
-
-    // −10° / 90° 끝 레이블
-    altSvg.appendChild(mk('text',{x:GCX-GR-12,y:GCY+12,'text-anchor':'middle',
-      'font-size':'6.5',fill:'rgba(255,255,255,0.2)','font-family':'sans-serif'},'-10°'));
-    altSvg.appendChild(mk('text',{x:GCX+GR+12,y:GCY+12,'text-anchor':'middle',
-      'font-size':'6.5',fill:'rgba(255,255,255,0.2)','font-family':'sans-serif'},'90°'));
   }
 
-  // ─────────────────────────────────────────────────────
-  // B. 방위 나침반 SVG (azSvg) — viewBox 0 0 150 150
-  // ─────────────────────────────────────────────────────
-  const azSvg = document.getElementById(prefix + '-azSvg');
-  if (azSvg) {
-    azSvg.innerHTML = '';
-    const CCX=75, CCY=75, CR=52;
-
-    // 배경 원판
-    azSvg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:CR+12,
-      fill:'var(--bg3)',stroke:'var(--border2)','stroke-width':'.7'}));
-    azSvg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:CR,
-      fill:'none',stroke:'rgba(255,255,255,0.05)','stroke-width':'0.5'}));
-
-    // 눈금 (36개, 10° 간격)
-    for(let i=0;i<36;i++){
-      const a=i*10-90, isMaj=(i%9===0), isMid=(i%3===0);
-      const ri=polar(CCX,CCY,CR-(isMaj?6:isMid?4:2),a);
-      const ro=polar(CCX,CCY,CR+(isMaj?6:isMid?3:1),a);
-      azSvg.appendChild(mk('line',{
-        x1:ri.x.toFixed(2),y1:ri.y.toFixed(2),x2:ro.x.toFixed(2),y2:ro.y.toFixed(2),
-        stroke:isMaj?'rgba(255,255,255,0.3)':isMid?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.07)',
-        'stroke-width':isMaj?'1.5':isMid?'0.8':'0.5'
-      }));
+  // 눈금
+  [-10,0,15,30,45,60,75,90].forEach(alt => {
+    const ang = angForAlt(alt) * Math.PI / 180;
+    const isMaj = (alt % 30 === 0 || alt === 0);
+    const len = isMaj ? 10 : 6;
+    const xi = GCX + (GR-len) * Math.cos(ang), yi = GCY + (GR-len) * Math.sin(ang);
+    const xo = GCX + (GR+6)   * Math.cos(ang), yo = GCY + (GR+6)   * Math.sin(ang);
+    svg.appendChild(mk('line',{x1:xi.toFixed(2),y1:yi.toFixed(2),x2:xo.toFixed(2),y2:yo.toFixed(2),
+      stroke:isMaj?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.12)',
+      'stroke-width':isMaj?'1.5':'0.8'}));
+    if(isMaj && alt>=0){
+      const xl = GCX + (GR+20)*Math.cos(ang), yl = GCY + (GR+20)*Math.sin(ang);
+      svg.appendChild(mk('text',{x:xl.toFixed(2),y:yl.toFixed(2),
+        'text-anchor':'middle','dominant-baseline':'middle','font-size':'10',
+        fill:'rgba(255,255,255,0.3)','font-family':'sans-serif'},alt+'°'));
     }
+  });
 
-    // N/S/E/W 레이블
-    [{a:0,l:'N',bold:true},{a:90,l:'E'},{a:180,l:'S'},{a:270,l:'W'}].forEach(({a,l,bold})=>{
-      const tp=polar(CCX,CCY,CR+20,a-90);
-      azSvg.appendChild(mk('text',{x:tp.x.toFixed(2),y:tp.y.toFixed(2),
-        'text-anchor':'middle','dominant-baseline':'middle','font-size':'9',
-        'font-weight':bold?'700':'400',
-        fill:bold?'var(--text)':'rgba(255,255,255,0.4)',
-        'font-family':"'Noto Sans KR',sans-serif"},l));
-    });
-
-    // 출 방위 바늘 (초록)
-    if(riseAz!=null){
-      const rp=polar(CCX,CCY,CR-8,riseAz-90);
-      azSvg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:rp.x.toFixed(2),y2:rp.y.toFixed(2),
-        stroke:'var(--rise)','stroke-width':'1.5','stroke-linecap':'round',opacity:'.85'}));
-      azSvg.appendChild(mk('circle',{cx:rp.x.toFixed(2),cy:rp.y.toFixed(2),r:'3.5',
-        fill:'var(--rise)',opacity:'.9'}));
-    }
-
-    // 몰 방위 바늘 (주황)
-    if(setAz!=null){
-      const sp=polar(CCX,CCY,CR-8,setAz-90);
-      azSvg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:sp.x.toFixed(2),y2:sp.y.toFixed(2),
-        stroke:'var(--set)','stroke-width':'1.5','stroke-linecap':'round',opacity:'.85'}));
-      azSvg.appendChild(mk('circle',{cx:sp.x.toFixed(2),cy:sp.y.toFixed(2),r:'3.5',
-        fill:'var(--set)',opacity:'.9'}));
-    }
-
-    // 현재 방위 바늘 (천체 색상)
-    if(curAz!=null){
-      const ct=polar(CCX,CCY,CR-4,curAz-90);
-      azSvg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:ct.x.toFixed(2),y2:ct.y.toFixed(2),
-        stroke:color,'stroke-width':'2.5','stroke-linecap':'round'}));
-      azSvg.appendChild(mk('circle',{cx:ct.x.toFixed(2),cy:ct.y.toFixed(2),r:'4',fill:color}));
-      // 방위각 수치 (중앙)
-      azSvg.appendChild(mk('text',{x:CCX,y:CCY-10,'text-anchor':'middle',
-        'font-size':'13','font-weight':'700',fill:color,
-        'font-family':"'Noto Sans KR',sans-serif"},Math.round(curAz)+'°'));
-      azSvg.appendChild(mk('text',{x:CCX,y:CCY+2,'text-anchor':'middle',
-        'font-size':'8.5',fill:'var(--muted)','font-family':'sans-serif'},dirLabel(curAz)));
-      azSvg.appendChild(mk('text',{x:CCX,y:CCY+13,'text-anchor':'middle',
-        'font-size':'6.5',fill:'rgba(255,255,255,0.2)','font-family':'sans-serif'},'AZIMUTH'));
-    }
-
-    // 중심 도트
-    azSvg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:'4',
-      fill:'var(--bg3)',stroke:'var(--border2)','stroke-width':'1'}));
+  // 남중 마커
+  if(maxAlt !== null){
+    const ma = angForAlt(maxAlt) * Math.PI / 180;
+    const mx1=GCX+(GR-10)*Math.cos(ma), my1=GCY+(GR-10)*Math.sin(ma);
+    const mx2=GCX+(GR+10)*Math.cos(ma), my2=GCY+(GR+10)*Math.sin(ma);
+    svg.appendChild(mk('line',{x1:mx1.toFixed(2),y1:my1.toFixed(2),
+      x2:mx2.toFixed(2),y2:my2.toFixed(2),
+      stroke:'var(--accent)','stroke-width':'2.5','stroke-linecap':'round'}));
   }
 
+  // 바늘
+  const na = angForAlt(curAlt) * Math.PI / 180;
+  const npx = GCX+(GR-18)*Math.cos(na), npy = GCY+(GR-18)*Math.sin(na);
+  svg.appendChild(mk('line',{x1:GCX,y1:GCY,x2:npx.toFixed(2),y2:npy.toFixed(2),
+    stroke:color,'stroke-width':'3','stroke-linecap':'round'}));
+  svg.appendChild(mk('circle',{cx:GCX,cy:GCY,r:'6',fill:color,stroke:'var(--bg3)','stroke-width':'2'}));
+
+  // 고도 수치
+  const sign = curAlt >= 0 ? '+' : '';
+  svg.appendChild(mk('text',{x:GCX,y:GCY-28,'text-anchor':'middle','font-size':'26',
+    'font-weight':'700',fill:color,'font-family':"'Noto Sans KR',sans-serif"},
+    sign+curAlt.toFixed(1)+'°'));
+  svg.appendChild(mk('text',{x:GCX,y:GCY-10,'text-anchor':'middle','font-size':'9',
+    fill:'var(--muted)','font-family':'sans-serif'},'ALTITUDE'));
+
+  // −10° / 90° 끝 레이블
+  svg.appendChild(mk('text',{x:GCX-GR-18,y:GCY+8,'text-anchor':'middle','font-size':'8',
+    fill:'rgba(255,255,255,0.2)','font-family':'sans-serif'},'-10°'));
+  svg.appendChild(mk('text',{x:GCX+GR+18,y:GCY+8,'text-anchor':'middle','font-size':'8',
+    fill:'rgba(255,255,255,0.2)','font-family':'sans-serif'},'90°'));
+
+  // 구분선
+  svg.appendChild(mk('line',{x1:'20',y1:'162',x2:'260',y2:'162',
+    stroke:'var(--border)','stroke-width':'0.5'}));
+
   // ─────────────────────────────────────────────────────
-  // C. 통계 카드 업데이트
+  // B. 방위 나침반  cx=140 cy=235 R=62
+  // ─────────────────────────────────────────────────────
+  const CCX=140, CCY=238, CR=62;
+
+  svg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:CR+10,
+    fill:'var(--bg3)',stroke:'var(--border)','stroke-width':'0.5'}));
+  svg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:CR,
+    fill:'none',stroke:'rgba(255,255,255,0.06)','stroke-width':'0.5'}));
+
+  // 눈금 36개
+  for(let i=0;i<36;i++){
+    const isMaj=(i%9===0), isMid=(i%3===0);
+    const p1=polar(CCX,CCY,CR-(isMaj?7:isMid?4:2),i*10);
+    const p2=polar(CCX,CCY,CR+(isMaj?7:isMid?3:1),i*10);
+    svg.appendChild(mk('line',{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,
+      stroke:isMaj?'rgba(255,255,255,0.35)':isMid?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.07)',
+      'stroke-width':isMaj?'1.5':isMid?'0.8':'0.5'}));
+  }
+
+  // NSEW 레이블
+  [{a:0,l:'N',bold:true},{a:90,l:'E'},{a:180,l:'S'},{a:270,l:'W'}].forEach(({a,l,bold})=>{
+    const tp = polar(CCX,CCY,CR+20,a);
+    svg.appendChild(mk('text',{x:tp.x,y:tp.y,
+      'text-anchor':'middle','dominant-baseline':'middle','font-size':'10',
+      'font-weight':bold?'700':'400',
+      fill:bold?'var(--text)':'rgba(255,255,255,0.4)',
+      'font-family':"'Noto Sans KR',sans-serif"},l));
+  });
+
+  // 출 바늘 (초록)
+  if(riseAz!=null){
+    const rp=polar(CCX,CCY,CR-8,riseAz);
+    svg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:rp.x,y2:rp.y,
+      stroke:'var(--rise)','stroke-width':'1.8','stroke-linecap':'round',opacity:'0.85'}));
+    svg.appendChild(mk('circle',{cx:rp.x,cy:rp.y,r:'4',fill:'var(--rise)',opacity:'0.9'}));
+  }
+
+  // 몰 바늘 (주황)
+  if(setAz!=null){
+    const sp=polar(CCX,CCY,CR-8,setAz);
+    svg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:sp.x,y2:sp.y,
+      stroke:'var(--set)','stroke-width':'1.8','stroke-linecap':'round',opacity:'0.85'}));
+    svg.appendChild(mk('circle',{cx:sp.x,cy:sp.y,r:'4',fill:'var(--set)',opacity:'0.9'}));
+  }
+
+  // 현재 방위 바늘 (천체 색)
+  if(curAz!=null){
+    const cp=polar(CCX,CCY,CR-4,curAz);
+    svg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:cp.x,y2:cp.y,
+      stroke:color,'stroke-width':'2.8','stroke-linecap':'round'}));
+    svg.appendChild(mk('circle',{cx:cp.x,cy:cp.y,r:'5',fill:color}));
+    // 중앙 텍스트
+    svg.appendChild(mk('text',{x:CCX,y:CCY-10,'text-anchor':'middle','font-size':'13',
+      'font-weight':'700',fill:color,'font-family':"'Noto Sans KR',sans-serif"},
+      Math.round(curAz)+'°'));
+    svg.appendChild(mk('text',{x:CCX,y:CCY+4,'text-anchor':'middle','font-size':'9',
+      fill:'var(--muted)','font-family':'sans-serif'},dirLabel(curAz)));
+    svg.appendChild(mk('text',{x:CCX,y:CCY+16,'text-anchor':'middle','font-size':'7.5',
+      fill:'rgba(255,255,255,0.25)','font-family':'sans-serif'},'AZIMUTH'));
+  }
+
+  // 중심 도트
+  svg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:'5',
+    fill:'var(--bg3)',stroke:'var(--border2)','stroke-width':'1.5'}));
+
+  // ─────────────────────────────────────────────────────
+  // C. 통계 텍스트 업데이트
   // ─────────────────────────────────────────────────────
   const el = id => document.getElementById(prefix+'-'+id);
-  const sign2=curAlt>=0?'+':'';
-  if(el('altCur'))    el('altCur').textContent    = sign2+curAlt.toFixed(1)+'°';
+  if(el('altCur'))    el('altCur').textContent    = (curAlt>=0?'+':'')+curAlt.toFixed(1)+'°';
   if(el('altMax'))    el('altMax').textContent    = maxAlt!==null ? '+'+maxAlt.toFixed(1)+'°' : '—';
   if(el('altRise'))   el('altRise').textContent   = riseAlt!==null ? riseAlt.toFixed(1)+'°'  : '—';
   if(el('altSet'))    el('altSet').textContent    = setAlt!==null  ? setAlt.toFixed(1)+'°'   : '—';
