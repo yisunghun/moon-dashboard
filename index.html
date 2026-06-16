@@ -1087,10 +1087,10 @@ function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, ri
     const px = (r,deg) => (CX + r*Math.cos(deg*Math.PI/180)).toFixed(2);
     const py = (r,deg) => (CY - r*Math.sin(deg*Math.PI/180)).toFixed(2);
     const arc = (r, a1, a2) => {
-      // a1→a2, 각도 감소(반시계), sweep-flag=0
-      const da = ((a1-a2)+360)%360;
-      const large = da>180?1:0;
-      return `M ${px(r,a1)} ${py(r,a1)} A ${r} ${r} 0 ${large} 0 ${px(r,a2)} ${py(r,a2)}`;
+      // a1→a2 위쪽 반원을 그리는 시계방향 호 (sweep=1)
+      const da = Math.abs(a1 - a2);
+      const large = da > 180 ? 1 : 0;
+      return `M ${px(r,a1)} ${py(r,a1)} A ${r} ${r} 0 ${large} 1 ${px(r,a2)} ${py(r,a2)}`;
     };
 
     // 배경 트랙 (180°→0°)
