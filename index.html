@@ -332,7 +332,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="moon-altGaugeSvg" viewBox="0 0 280 150" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="moon-altGaugeSvg" viewBox="0 0 300 220" style="width:100%;max-width:320px;height:auto;display:block"></svg>
         <svg id="moon-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
@@ -471,7 +471,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="jupiter-altGaugeSvg" viewBox="0 0 280 150" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="jupiter-altGaugeSvg" viewBox="0 0 300 220" style="width:100%;max-width:320px;height:auto;display:block"></svg>
         <svg id="jupiter-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
@@ -561,7 +561,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="venus-altGaugeSvg" viewBox="0 0 280 150" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="venus-altGaugeSvg" viewBox="0 0 300 220" style="width:100%;max-width:320px;height:auto;display:block"></svg>
         <svg id="venus-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
@@ -651,7 +651,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="saturn-altGaugeSvg" viewBox="0 0 280 150" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="saturn-altGaugeSvg" viewBox="0 0 300 220" style="width:100%;max-width:320px;height:auto;display:block"></svg>
         <svg id="saturn-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
@@ -741,7 +741,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="mars-altGaugeSvg" viewBox="0 0 280 150" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="mars-altGaugeSvg" viewBox="0 0 300 220" style="width:100%;max-width:320px;height:auto;display:block"></svg>
         <svg id="mars-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
@@ -1083,7 +1083,7 @@ function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, ri
   const gauSvg = document.getElementById(prefix+'-altGaugeSvg');
   if(gauSvg){
     gauSvg.innerHTML='';
-    const CX=140, CY=140, R=110;
+    const CX=150, CY=185, R=95;
     // alt -10°→180°, +90°→0° (선형 매핑)
     const angOf = alt => (1-(Math.max(-10,Math.min(90,alt))+10)/100)*180;
     // SVG 좌표: x=CX+R*cos(deg°), y=CY-R*sin(deg°)  ← y를 위로 뒤집음
@@ -1140,10 +1140,10 @@ function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, ri
 
     // 수치 (중앙 위쪽)
     const sign=curAlt>=0?'+':'';
-    gauSvg.appendChild(mk('text',{x:CX,y:CY-50,
-      'text-anchor':'middle','font-size':'28','font-weight':'700',
+    gauSvg.appendChild(mk('text',{x:CX,y:CY-65,
+      'text-anchor':'middle','font-size':'26','font-weight':'700',
       fill:color,'font-family':"'Noto Sans KR',sans-serif"},sign+curAlt.toFixed(1)+'°'));
-    gauSvg.appendChild(mk('text',{x:CX,y:CY-28,
+    gauSvg.appendChild(mk('text',{x:CX,y:CY-44,
       'text-anchor':'middle','font-size':'9',fill:'var(--muted)','font-family':'sans-serif'},'ALTITUDE'));
 
     // 끝 레이블
