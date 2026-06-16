@@ -332,7 +332,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="moon-altGaugeSvg" viewBox="0 0 260 160" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="moon-altGaugeSvg" viewBox="0 0 280 150" style="width:100%;max-width:320px;height:auto;display:block"></svg>
         <svg id="moon-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
@@ -471,7 +471,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="jupiter-altGaugeSvg" viewBox="0 0 260 160" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="jupiter-altGaugeSvg" viewBox="0 0 280 150" style="width:100%;max-width:320px;height:auto;display:block"></svg>
         <svg id="jupiter-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
@@ -561,7 +561,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="venus-altGaugeSvg" viewBox="0 0 260 160" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="venus-altGaugeSvg" viewBox="0 0 280 150" style="width:100%;max-width:320px;height:auto;display:block"></svg>
         <svg id="venus-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
@@ -651,7 +651,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="saturn-altGaugeSvg" viewBox="0 0 260 160" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="saturn-altGaugeSvg" viewBox="0 0 280 150" style="width:100%;max-width:320px;height:auto;display:block"></svg>
         <svg id="saturn-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
@@ -741,7 +741,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="mars-altGaugeSvg" viewBox="0 0 260 160" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="mars-altGaugeSvg" viewBox="0 0 280 150" style="width:100%;max-width:320px;height:auto;display:block"></svg>
         <svg id="mars-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
@@ -1062,8 +1062,8 @@ function altArray(jdMid, getEquat){
 
 // ═══════════════════════════════════════════════════════
 // 고도계 렌더러
-//  altGaugeSvg   viewBox="0 0 260 160"  반원 고도 게이지
-//  altCompassSvg viewBox="0 0 220 220"  원형 나침반
+//  altGaugeSvg   viewBox="0 0 280 150"  반원 게이지
+//  altCompassSvg viewBox="0 0 220 220"  나침반
 // ═══════════════════════════════════════════════════════
 function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, riseAz, setAz) {
   const ns = 'http://www.w3.org/2000/svg';
@@ -1075,94 +1075,86 @@ function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, ri
   };
 
   // ─── A. 반원 고도 게이지 ─────────────────────────────
-  // viewBox 0 0 260 160  / 반원은 아래 절반만: cx=130 cy=148 R=120
-  // 각도: 180°(좌)=−10°  0°(우)=+90°  (Math 기준 cos/sin)
+  // viewBox="0 0 280 150"
+  // 반원 중심: cx=140, cy=140 (바닥에 붙임), R=110
+  // 반원은 위쪽 절반(y<cy)만 표시 → 180°(좌)~0°(우), Math 각도
+  // 즉 y = cy + R*sin(ang), ang=180°→sin=0,y=cy; ang=90°→sin=1,y=cy+R(아래로 벗어남)
+  // ∴ 반원은 ang 180°(좌)→0°(우)를 sweep=0(반시계)로 그리면 위쪽 반원
   const gauSvg = document.getElementById(prefix+'-altGaugeSvg');
   if(gauSvg){
     gauSvg.innerHTML='';
-    const GCX=130, GCY=148, GR=118;
-    const angOf = alt => (1 - (Math.max(-10,Math.min(90,alt))+10)/100) * 180; // 180→0
-
-    const semicircle = (r, fromDeg, toDeg) => {
-      // fromDeg → toDeg, 반시계(sweep-flag=0), 모두 하단 반원
-      const toRad = d => d * Math.PI / 180;
-      const sx = GCX + r*Math.cos(toRad(fromDeg));
-      const sy = GCY + r*Math.sin(toRad(fromDeg));
-      const ex = GCX + r*Math.cos(toRad(toDeg));
-      const ey = GCY + r*Math.sin(toRad(toDeg));
-      const da = ((fromDeg - toDeg) + 360) % 360; // 반시계 각도차
-      const large = da > 180 ? 1 : 0;
-      return `M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${r} ${r} 0 ${large} 0 ${ex.toFixed(2)} ${ey.toFixed(2)}`;
+    const CX=140, CY=140, R=110;
+    // alt -10°→180°, +90°→0° (선형 매핑)
+    const angOf = alt => (1-(Math.max(-10,Math.min(90,alt))+10)/100)*180;
+    // SVG 좌표: x=CX+R*cos(deg°), y=CY-R*sin(deg°)  ← y를 위로 뒤집음
+    const px = (r,deg) => (CX + r*Math.cos(deg*Math.PI/180)).toFixed(2);
+    const py = (r,deg) => (CY - r*Math.sin(deg*Math.PI/180)).toFixed(2);
+    const arc = (r, a1, a2) => {
+      // a1→a2, 각도 감소(반시계), sweep-flag=0
+      const da = ((a1-a2)+360)%360;
+      const large = da>180?1:0;
+      return `M ${px(r,a1)} ${py(r,a1)} A ${r} ${r} 0 ${large} 0 ${px(r,a2)} ${py(r,a2)}`;
     };
 
-    // 배경 트랙
-    gauSvg.appendChild(mk('path',{ d:semicircle(GR,180,0),
-      fill:'none', stroke:'rgba(128,128,128,0.15)',
-      'stroke-width':'18', 'stroke-linecap':'round' }));
+    // 배경 트랙 (180°→0°)
+    gauSvg.appendChild(mk('path',{d:arc(R,180,0),
+      fill:'none',stroke:'rgba(128,128,128,0.15)','stroke-width':'16','stroke-linecap':'round'}));
 
-    // 채움 호
-    if(curAlt > -10){
-      const endAng = angOf(curAlt);
-      gauSvg.appendChild(mk('path',{ d:semicircle(GR,180,endAng),
-        fill:'none', stroke:color,
-        'stroke-width':'18', 'stroke-linecap':'round', opacity:'0.9' }));
+    // 채움 호 (180°→현재고도각)
+    if(curAlt>-10){
+      const ea=angOf(curAlt);
+      gauSvg.appendChild(mk('path',{d:arc(R,180,ea),
+        fill:'none',stroke:color,'stroke-width':'16','stroke-linecap':'round',opacity:'0.9'}));
     }
 
     // 눈금
-    [-10,0,30,60,90].forEach(alt => {
-      const ang = angOf(alt) * Math.PI / 180;
-      const isMaj = alt%30===0||alt===0;
-      const len = isMaj?10:6;
-      const xi = GCX+(GR-len)*Math.cos(ang), yi = GCY+(GR-len)*Math.sin(ang);
-      const xo = GCX+(GR+len)*Math.cos(ang), yo = GCY+(GR+len)*Math.sin(ang);
+    [-10,0,30,60,90].forEach(alt=>{
+      const a=angOf(alt), isMaj=alt%30===0||alt===0;
+      const len=isMaj?10:6;
       gauSvg.appendChild(mk('line',{
-        x1:xi.toFixed(2),y1:yi.toFixed(2),x2:xo.toFixed(2),y2:yo.toFixed(2),
-        stroke:isMaj?'rgba(255,255,255,0.35)':'rgba(255,255,255,0.15)',
-        'stroke-width':isMaj?'1.8':'0.8' }));
-      if(isMaj && alt>=0){
-        const xl=GCX+(GR+22)*Math.cos(ang), yl=GCY+(GR+22)*Math.sin(ang);
-        gauSvg.appendChild(mk('text',{ x:xl.toFixed(2),y:yl.toFixed(2),
+        x1:px(R-len,a),y1:py(R-len,a),x2:px(R+len,a),y2:py(R+len,a),
+        stroke:isMaj?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.12)',
+        'stroke-width':isMaj?'1.8':'0.8'}));
+      if(isMaj&&alt>=0){
+        gauSvg.appendChild(mk('text',{x:px(R+22,a),y:py(R+22,a),
           'text-anchor':'middle','dominant-baseline':'middle',
-          'font-size':'11',fill:'rgba(255,255,255,0.3)','font-family':'sans-serif'
-        }, alt+'°'));
+          'font-size':'10',fill:'rgba(255,255,255,0.3)','font-family':'sans-serif'},alt+'°'));
       }
     });
 
     // 남중 마커
     if(maxAlt!==null){
-      const ang=angOf(maxAlt)*Math.PI/180;
+      const a=angOf(maxAlt);
       gauSvg.appendChild(mk('line',{
-        x1:(GCX+(GR-10)*Math.cos(ang)).toFixed(2), y1:(GCY+(GR-10)*Math.sin(ang)).toFixed(2),
-        x2:(GCX+(GR+10)*Math.cos(ang)).toFixed(2), y2:(GCY+(GR+10)*Math.sin(ang)).toFixed(2),
-        stroke:'var(--accent)','stroke-width':'3','stroke-linecap':'round' }));
+        x1:px(R-10,a),y1:py(R-10,a),x2:px(R+10,a),y2:py(R+10,a),
+        stroke:'var(--accent)','stroke-width':'3','stroke-linecap':'round'}));
     }
 
     // 바늘
-    const na=angOf(curAlt)*Math.PI/180;
+    const na=angOf(curAlt);
     gauSvg.appendChild(mk('line',{
-      x1:GCX,y1:GCY,
-      x2:(GCX+(GR-20)*Math.cos(na)).toFixed(2), y2:(GCY+(GR-20)*Math.sin(na)).toFixed(2),
-      stroke:color,'stroke-width':'4','stroke-linecap':'round' }));
-    gauSvg.appendChild(mk('circle',{cx:GCX,cy:GCY,r:'7',
+      x1:CX,y1:CY,x2:px(R-18,na),y2:py(R-18,na),
+      stroke:color,'stroke-width':'4','stroke-linecap':'round'}));
+    gauSvg.appendChild(mk('circle',{cx:CX,cy:CY,r:'7',
       fill:color,stroke:'var(--bg3)','stroke-width':'2'}));
 
-    // 수치
+    // 수치 (중앙 위쪽)
     const sign=curAlt>=0?'+':'';
-    gauSvg.appendChild(mk('text',{x:GCX,y:GCY-40,'text-anchor':'middle',
-      'font-size':'28','font-weight':'700',fill:color,'font-family':"'Noto Sans KR',sans-serif"
-    }, sign+curAlt.toFixed(1)+'°'));
-    gauSvg.appendChild(mk('text',{x:GCX,y:GCY-18,'text-anchor':'middle',
-      'font-size':'9',fill:'var(--muted)','font-family':'sans-serif'},'ALTITUDE'));
+    gauSvg.appendChild(mk('text',{x:CX,y:CY-50,
+      'text-anchor':'middle','font-size':'28','font-weight':'700',
+      fill:color,'font-family':"'Noto Sans KR',sans-serif"},sign+curAlt.toFixed(1)+'°'));
+    gauSvg.appendChild(mk('text',{x:CX,y:CY-28,
+      'text-anchor':'middle','font-size':'9',fill:'var(--muted)','font-family':'sans-serif'},'ALTITUDE'));
 
     // 끝 레이블
-    gauSvg.appendChild(mk('text',{x:GCX-GR-22,y:GCY+8,'text-anchor':'middle',
-      'font-size':'9',fill:'rgba(255,255,255,0.2)','font-family':'sans-serif'},'-10°'));
-    gauSvg.appendChild(mk('text',{x:GCX+GR+22,y:GCY+8,'text-anchor':'middle',
-      'font-size':'9',fill:'rgba(255,255,255,0.2)','font-family':'sans-serif'},'90°'));
+    gauSvg.appendChild(mk('text',{x:px(R+18,180),y:py(R+18,180),
+      'text-anchor':'middle','font-size':'9',fill:'rgba(255,255,255,0.2)','font-family':'sans-serif'},'-10°'));
+    gauSvg.appendChild(mk('text',{x:px(R+18,0),y:py(R+18,0),
+      'text-anchor':'middle','font-size':'9',fill:'rgba(255,255,255,0.2)','font-family':'sans-serif'},'90°'));
   }
 
   // ─── B. 원형 나침반 ──────────────────────────────────
-  // viewBox 0 0 220 220  cx=110 cy=110 R=88
+  // viewBox="0 0 220 220"  cx=110 cy=110 R=88
   const cmpSvg = document.getElementById(prefix+'-altCompassSvg');
   if(cmpSvg){
     cmpSvg.innerHTML='';
@@ -1173,16 +1165,16 @@ function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, ri
     cmpSvg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:CR,
       fill:'none',stroke:'rgba(255,255,255,0.06)','stroke-width':'0.5'}));
 
-    // 눈금 (0°=북=위, 시계방향 → SVG각 = az-90)
+    // 눈금 (0°=북=위, 시계방향 → SVG rad = (az-90)*PI/180)
     for(let i=0;i<36;i++){
       const isMaj=i%9===0, isMid=i%3===0;
       const rad=(i*10-90)*Math.PI/180;
       const ri=CR-(isMaj?8:isMid?5:2), ro=CR+(isMaj?8:isMid?4:2);
       cmpSvg.appendChild(mk('line',{
-        x1:(CCX+ri*Math.cos(rad)).toFixed(2), y1:(CCY+ri*Math.sin(rad)).toFixed(2),
-        x2:(CCX+ro*Math.cos(rad)).toFixed(2), y2:(CCY+ro*Math.sin(rad)).toFixed(2),
+        x1:(CCX+ri*Math.cos(rad)).toFixed(2),y1:(CCY+ri*Math.sin(rad)).toFixed(2),
+        x2:(CCX+ro*Math.cos(rad)).toFixed(2),y2:(CCY+ro*Math.sin(rad)).toFixed(2),
         stroke:isMaj?'rgba(255,255,255,0.35)':isMid?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.07)',
-        'stroke-width':isMaj?'1.8':isMid?'0.8':'0.4' }));
+        'stroke-width':isMaj?'1.8':isMid?'0.8':'0.4'}));
     }
 
     // NSEW
@@ -1194,60 +1186,54 @@ function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, ri
         'text-anchor':'middle','dominant-baseline':'middle','font-size':'12',
         'font-weight':bold?'700':'400',
         fill:bold?'var(--text)':'rgba(255,255,255,0.4)',
-        'font-family':"'Noto Sans KR',sans-serif" },l));
+        'font-family':"'Noto Sans KR',sans-serif"},l));
     });
 
     const cPt=(r,az)=>{
       const rad=(az-90)*Math.PI/180;
-      return {x:(CCX+r*Math.cos(rad)).toFixed(2), y:(CCY+r*Math.sin(rad)).toFixed(2)};
+      return {x:(CCX+r*Math.cos(rad)).toFixed(2),y:(CCY+r*Math.sin(rad)).toFixed(2)};
     };
 
-    // 출 바늘
     if(riseAz!=null){
       const p=cPt(CR-10,riseAz);
       cmpSvg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:p.x,y2:p.y,
         stroke:'var(--rise)','stroke-width':'2.2','stroke-linecap':'round',opacity:'0.85'}));
       cmpSvg.appendChild(mk('circle',{cx:p.x,cy:p.y,r:'5.5',fill:'var(--rise)',opacity:'0.9'}));
     }
-
-    // 몰 바늘
     if(setAz!=null){
       const p=cPt(CR-10,setAz);
       cmpSvg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:p.x,y2:p.y,
         stroke:'var(--set)','stroke-width':'2.2','stroke-linecap':'round',opacity:'0.85'}));
       cmpSvg.appendChild(mk('circle',{cx:p.x,cy:p.y,r:'5.5',fill:'var(--set)',opacity:'0.9'}));
     }
-
-    // 현재 방위 바늘
     if(curAz!=null){
       const p=cPt(CR-5,curAz);
       cmpSvg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:p.x,y2:p.y,
         stroke:color,'stroke-width':'3.2','stroke-linecap':'round'}));
       cmpSvg.appendChild(mk('circle',{cx:p.x,cy:p.y,r:'7',fill:color}));
       cmpSvg.appendChild(mk('text',{x:CCX,y:CCY-14,'text-anchor':'middle',
-        'font-size':'16','font-weight':'700',fill:color,'font-family':"'Noto Sans KR',sans-serif"
-      },Math.round(curAz)+'°'));
+        'font-size':'16','font-weight':'700',fill:color,'font-family':"'Noto Sans KR',sans-serif"},
+        Math.round(curAz)+'°'));
       cmpSvg.appendChild(mk('text',{x:CCX,y:CCY+4,'text-anchor':'middle',
         'font-size':'11',fill:'var(--muted)','font-family':'sans-serif'},dirLabel(curAz)));
       cmpSvg.appendChild(mk('text',{x:CCX,y:CCY+18,'text-anchor':'middle',
         'font-size':'8',fill:'rgba(255,255,255,0.22)','font-family':'sans-serif'},'AZIMUTH'));
     }
-
     cmpSvg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:'6',
       fill:'var(--bg3)',stroke:'var(--border2)','stroke-width':'1.5'}));
   }
 
-  // ─── C. 통계 업데이트 ───────────────────────────────
-  const el = id => document.getElementById(prefix+'-'+id);
-  if(el('altCur'))    el('altCur').textContent    = (curAlt>=0?'+':'')+curAlt.toFixed(1)+'°';
-  if(el('altMax'))    el('altMax').textContent    = maxAlt!==null?'+'+maxAlt.toFixed(1)+'°':'—';
-  if(el('altRise'))   el('altRise').textContent   = riseAlt!==null?riseAlt.toFixed(1)+'°':'—';
-  if(el('altSet'))    el('altSet').textContent    = setAlt!==null?setAlt.toFixed(1)+'°':'—';
+  // ─── C. 통계 ────────────────────────────────────────
+  const el=id=>document.getElementById(prefix+'-'+id);
+  if(el('altCur'))  el('altCur').textContent=(curAlt>=0?'+':'')+curAlt.toFixed(1)+'°';
+  if(el('altMax'))  el('altMax').textContent=maxAlt!==null?'+'+maxAlt.toFixed(1)+'°':'—';
+  if(el('altRise')) el('altRise').textContent=riseAlt!==null?riseAlt.toFixed(1)+'°':'—';
+  if(el('altSet'))  el('altSet').textContent=setAlt!==null?setAlt.toFixed(1)+'°':'—';
   if(el('altStatus')){
-    el('altStatus').textContent = curAlt>30?'관측 적합 ✓':curAlt>0?'낮은 고도':'지평선 아래';
-    el('altStatus').style.color = curAlt>30?'var(--rise)':curAlt>0?color:'var(--muted)';
+    el('altStatus').textContent=curAlt>30?'관측 적합 ✓':curAlt>0?'낮은 고도':'지평선 아래';
+    el('altStatus').style.color=curAlt>30?'var(--rise)':curAlt>0?color:'var(--muted)';
   }
-  if(el('altAzVal'))  el('altAzVal').textContent  = curAz!=null?Math.round(curAz)+'° '+dirLabel(curAz):'—';
+  if(el('altAzVal')) el('altAzVal').textContent=curAz!=null?Math.round(curAz)+'° '+dirLabel(curAz):'—';
 }
 
 
