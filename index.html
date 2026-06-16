@@ -333,7 +333,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
         <svg id="moon-altGaugeSvg" viewBox="0 0 300 220" style="width:100%;max-width:320px;height:auto;display:block"></svg>
-        <svg id="moon-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="moon-altCur" style="color:#c9a84c">—</span></div>
@@ -472,7 +471,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
         <svg id="jupiter-altGaugeSvg" viewBox="0 0 300 220" style="width:100%;max-width:320px;height:auto;display:block"></svg>
-        <svg id="jupiter-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="jupiter-altCur" style="color:#c8a878">—</span></div>
@@ -562,7 +560,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
         <svg id="venus-altGaugeSvg" viewBox="0 0 300 220" style="width:100%;max-width:320px;height:auto;display:block"></svg>
-        <svg id="venus-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="venus-altCur" style="color:#e8c4a0">—</span></div>
@@ -652,7 +649,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
         <svg id="saturn-altGaugeSvg" viewBox="0 0 300 220" style="width:100%;max-width:320px;height:auto;display:block"></svg>
-        <svg id="saturn-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="saturn-altCur" style="color:#b8a86a">—</span></div>
@@ -742,7 +738,6 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
         <svg id="mars-altGaugeSvg" viewBox="0 0 300 220" style="width:100%;max-width:320px;height:auto;display:block"></svg>
-        <svg id="mars-altCompassSvg" viewBox="0 0 220 220" style="width:100%;max-width:240px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="mars-altCur" style="color:#d4674a">—</span></div>
@@ -1062,8 +1057,7 @@ function altArray(jdMid, getEquat){
 
 // ═══════════════════════════════════════════════════════
 // 고도계 렌더러
-//  altGaugeSvg   viewBox="0 0 280 150"  반원 게이지
-//  altCompassSvg viewBox="0 0 220 220"  나침반
+//  altGaugeSvg viewBox="0 0 300 220"  반원 고도 게이지만
 // ═══════════════════════════════════════════════════════
 function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, riseAz, setAz) {
   const ns = 'http://www.w3.org/2000/svg';
@@ -1151,76 +1145,6 @@ function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, ri
       'text-anchor':'middle','font-size':'9',fill:'rgba(255,255,255,0.2)','font-family':'sans-serif'},'-10°'));
     gauSvg.appendChild(mk('text',{x:px(R+18,0),y:py(R+18,0),
       'text-anchor':'middle','font-size':'9',fill:'rgba(255,255,255,0.2)','font-family':'sans-serif'},'90°'));
-  }
-
-  // ─── B. 원형 나침반 ──────────────────────────────────
-  // viewBox="0 0 220 220"  cx=110 cy=110 R=88
-  const cmpSvg = document.getElementById(prefix+'-altCompassSvg');
-  if(cmpSvg){
-    cmpSvg.innerHTML='';
-    const CCX=110, CCY=110, CR=88;
-
-    cmpSvg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:CR+12,
-      fill:'var(--bg3)',stroke:'var(--border)','stroke-width':'0.5'}));
-    cmpSvg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:CR,
-      fill:'none',stroke:'rgba(255,255,255,0.06)','stroke-width':'0.5'}));
-
-    // 눈금 (0°=북=위, 시계방향 → SVG rad = (az-90)*PI/180)
-    for(let i=0;i<36;i++){
-      const isMaj=i%9===0, isMid=i%3===0;
-      const rad=(i*10-90)*Math.PI/180;
-      const ri=CR-(isMaj?8:isMid?5:2), ro=CR+(isMaj?8:isMid?4:2);
-      cmpSvg.appendChild(mk('line',{
-        x1:(CCX+ri*Math.cos(rad)).toFixed(2),y1:(CCY+ri*Math.sin(rad)).toFixed(2),
-        x2:(CCX+ro*Math.cos(rad)).toFixed(2),y2:(CCY+ro*Math.sin(rad)).toFixed(2),
-        stroke:isMaj?'rgba(255,255,255,0.35)':isMid?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.07)',
-        'stroke-width':isMaj?'1.8':isMid?'0.8':'0.4'}));
-    }
-
-    // NSEW
-    [{a:0,l:'N',bold:true},{a:90,l:'E'},{a:180,l:'S'},{a:270,l:'W'}].forEach(({a,l,bold})=>{
-      const rad=(a-90)*Math.PI/180;
-      cmpSvg.appendChild(mk('text',{
-        x:(CCX+(CR+20)*Math.cos(rad)).toFixed(2),
-        y:(CCY+(CR+20)*Math.sin(rad)).toFixed(2),
-        'text-anchor':'middle','dominant-baseline':'middle','font-size':'12',
-        'font-weight':bold?'700':'400',
-        fill:bold?'var(--text)':'rgba(255,255,255,0.4)',
-        'font-family':"'Noto Sans KR',sans-serif"},l));
-    });
-
-    const cPt=(r,az)=>{
-      const rad=(az-90)*Math.PI/180;
-      return {x:(CCX+r*Math.cos(rad)).toFixed(2),y:(CCY+r*Math.sin(rad)).toFixed(2)};
-    };
-
-    if(riseAz!=null){
-      const p=cPt(CR-10,riseAz);
-      cmpSvg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:p.x,y2:p.y,
-        stroke:'var(--rise)','stroke-width':'2.2','stroke-linecap':'round',opacity:'0.85'}));
-      cmpSvg.appendChild(mk('circle',{cx:p.x,cy:p.y,r:'5.5',fill:'var(--rise)',opacity:'0.9'}));
-    }
-    if(setAz!=null){
-      const p=cPt(CR-10,setAz);
-      cmpSvg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:p.x,y2:p.y,
-        stroke:'var(--set)','stroke-width':'2.2','stroke-linecap':'round',opacity:'0.85'}));
-      cmpSvg.appendChild(mk('circle',{cx:p.x,cy:p.y,r:'5.5',fill:'var(--set)',opacity:'0.9'}));
-    }
-    if(curAz!=null){
-      const p=cPt(CR-5,curAz);
-      cmpSvg.appendChild(mk('line',{x1:CCX,y1:CCY,x2:p.x,y2:p.y,
-        stroke:color,'stroke-width':'3.2','stroke-linecap':'round'}));
-      cmpSvg.appendChild(mk('circle',{cx:p.x,cy:p.y,r:'7',fill:color}));
-      cmpSvg.appendChild(mk('text',{x:CCX,y:CCY-14,'text-anchor':'middle',
-        'font-size':'16','font-weight':'700',fill:color,'font-family':"'Noto Sans KR',sans-serif"},
-        Math.round(curAz)+'°'));
-      cmpSvg.appendChild(mk('text',{x:CCX,y:CCY+4,'text-anchor':'middle',
-        'font-size':'11',fill:'var(--muted)','font-family':'sans-serif'},dirLabel(curAz)));
-      cmpSvg.appendChild(mk('text',{x:CCX,y:CCY+18,'text-anchor':'middle',
-        'font-size':'8',fill:'rgba(255,255,255,0.22)','font-family':'sans-serif'},'AZIMUTH'));
-    }
-    cmpSvg.appendChild(mk('circle',{cx:CCX,cy:CCY,r:'6',
-      fill:'var(--bg3)',stroke:'var(--border2)','stroke-width':'1.5'}));
   }
 
   // ─── C. 통계 ────────────────────────────────────────
