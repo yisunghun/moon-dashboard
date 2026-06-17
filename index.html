@@ -82,25 +82,20 @@ header{display:flex;align-items:flex-start;justify-content:space-between;margin-
 
 /* ── 히어로 ── */
 
-.hero-summary{flex-shrink:0;display:flex;flex-direction:column;gap:9px;padding-left:1rem;border-left:0.5px solid var(--border);min-width:108px}
+.hero-summary{flex-shrink:0;display:flex;flex-direction:column;gap:7px;padding-left:0.85rem;border-left:0.5px solid var(--border);min-width:88px}
 .hs-row{display:flex;flex-direction:column;gap:1px}
-.hs-label{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.hs-label{font-size:9.5px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap}
 .hs-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.hs-val{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
-.hs-sub{font-size:9px;color:var(--muted)}
-@media(max-width:420px){
-  .hero-summary{border-left:none;border-top:0.5px solid var(--border);padding-left:0;padding-top:10px;width:100%;flex-direction:row;justify-content:space-between;min-width:0}
-  .hs-row{flex-direction:column;align-items:flex-start;gap:1px;flex:1}
-  .hs-val,.hs-sub{white-space:nowrap}
-}
+.hs-val{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text);white-space:nowrap}
+.hs-sub{font-size:8.5px;color:var(--muted);white-space:nowrap}
 .hero{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--r);padding:1.25rem;display:flex;align-items:center;gap:1.25rem;margin-bottom:12px}
 .hero-icon{flex-shrink:0;font-size:56px;line-height:1;width:72px;text-align:center}
-.hero-info{flex:1}
-.phase-name{font-size:1.05rem;font-weight:700;font-family:var(--font-serif);color:var(--text);margin-bottom:3px}
-.phase-pct{font-size:12px;color:var(--muted);margin-bottom:10px}
-.horizon-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 10px;border-radius:20px;border:0.5px solid var(--border2);margin-bottom:6px}
+.hero-info{flex:1;min-width:0}
+.phase-name{font-size:1.05rem;font-weight:700;font-family:var(--font-serif);color:var(--text);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.phase-pct{font-size:12px;color:var(--muted);margin-bottom:10px;white-space:nowrap}
+.horizon-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 10px;border-radius:20px;border:0.5px solid var(--border2);margin-bottom:6px;white-space:nowrap}
 .badge-dot{width:7px;height:7px;border-radius:50%}
-.next-event{font-size:12px;color:var(--muted)}
+.next-event{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 
 /* ── 고도계 ── */
@@ -255,7 +250,14 @@ header{display:flex;align-items:flex-start;justify-content:space-between;margin-
 footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);letter-spacing:.04em}
 
 @media(max-width:420px){
-  .hero{flex-direction:column;align-items:flex-start;gap:1rem}
+  .hero{padding:1rem 0.9rem;gap:0.7rem}
+  .hero-icon{font-size:44px;width:56px}
+  .moon-svg-wrap svg{width:64px;height:64px}
+  .phase-name{font-size:0.92rem}
+  .phase-pct{font-size:11px;margin-bottom:6px}
+  .horizon-badge{font-size:11px;padding:2px 8px;margin-bottom:4px}
+  .next-event{font-size:11px}
+  .hero-summary{min-width:76px;padding-left:0.6rem;gap:6px}
   .compass-layout{flex-direction:column;align-items:center;gap:1.2rem}
   .compass-info{width:100%}
 }
