@@ -81,6 +81,18 @@ header{display:flex;align-items:flex-start;justify-content:space-between;margin-
 .grid2 .card{margin-bottom:0}
 
 /* ── 히어로 ── */
+
+.hero-summary{flex-shrink:0;display:flex;flex-direction:column;gap:9px;padding-left:1rem;border-left:0.5px solid var(--border);min-width:108px}
+.hs-row{display:flex;flex-direction:column;gap:1px}
+.hs-label{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.hs-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.hs-val{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
+.hs-sub{font-size:9px;color:var(--muted)}
+@media(max-width:420px){
+  .hero-summary{border-left:none;border-top:0.5px solid var(--border);padding-left:0;padding-top:10px;width:100%;flex-direction:row;justify-content:space-between;min-width:0}
+  .hs-row{flex-direction:column;align-items:flex-start;gap:1px;flex:1}
+  .hs-val,.hs-sub{white-space:nowrap}
+}
 .hero{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--r);padding:1.25rem;display:flex;align-items:center;gap:1.25rem;margin-bottom:12px}
 .hero-icon{flex-shrink:0;font-size:56px;line-height:1;width:72px;text-align:center}
 .hero-info{flex:1}
@@ -302,11 +314,11 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
       <div class="horizon-badge" id="horizonBadge"><span class="badge-dot" id="badgeDot"></span><span id="horizonText">—</span></div>
       <div class="next-event" id="nextEventEl">—</div>
     </div>
-  </div>
-  <div class="grid3">
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--rise)"></span>월출</div><div class="card-value" id="moon-riseVal">—</div><div class="card-sub" id="moon-riseAzEl">방위 —</div></div>
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--accent)"></span>남중</div><div class="card-value" id="moon-transitVal">—</div><div class="card-sub" id="moon-transitElEl">고도 —</div></div>
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--set)"></span>월몰</div><div class="card-value" id="moon-setVal">—</div><div class="card-sub" id="moon-setAzEl">방위 —</div></div>
+    <div class="hero-summary">
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--rise)"></span>월출</span><span class="hs-val" id="moon-riseVal">—</span><span class="hs-sub" id="moon-riseAzEl">방위 —</span></div>
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--accent)"></span>남중</span><span class="hs-val" id="moon-transitVal">—</span><span class="hs-sub" id="moon-transitElEl">고도 —</span></div>
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--set)"></span>월몰</span><span class="hs-val" id="moon-setVal">—</span><span class="hs-sub" id="moon-setAzEl">방위 —</span></div>
+    </div>
   </div>
   <div class="grid2">
     <div class="card">
@@ -443,11 +455,11 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
       <div class="horizon-badge" id="jupiter-badge"><span class="badge-dot" id="jupiter-badgeDot"></span><span id="jupiter-horizonText">—</span></div>
       <div class="next-event" id="jupiter-nextEvent">—</div>
     </div>
-  </div>
-  <div class="grid3">
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--rise)"></span>출</div><div class="card-value" id="jupiter-riseVal">—</div><div class="card-sub" id="jupiter-riseAz">방위 —</div></div>
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--accent)"></span>남중</div><div class="card-value" id="jupiter-transitVal">—</div><div class="card-sub" id="jupiter-transitEl">고도 —</div></div>
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--set)"></span>몰</div><div class="card-value" id="jupiter-setVal">—</div><div class="card-sub" id="jupiter-setAz">방위 —</div></div>
+    <div class="hero-summary">
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--rise)"></span>출</span><span class="hs-val" id="jupiter-riseVal">—</span><span class="hs-sub" id="jupiter-riseAz">방위 —</span></div>
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--accent)"></span>남중</span><span class="hs-val" id="jupiter-transitVal">—</span><span class="hs-sub" id="jupiter-transitEl">고도 —</span></div>
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--set)"></span>몰</span><span class="hs-val" id="jupiter-setVal">—</span><span class="hs-sub" id="jupiter-setAz">방위 —</span></div>
+    </div>
   </div>
   <div class="grid2">
     <div class="card"><div class="card-label">현재 위치</div>
@@ -533,11 +545,11 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
       <div class="horizon-badge" id="venus-badge"><span class="badge-dot" id="venus-badgeDot"></span><span id="venus-horizonText">—</span></div>
       <div class="next-event" id="venus-nextEvent">—</div>
     </div>
-  </div>
-  <div class="grid3">
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--rise)"></span>출</div><div class="card-value" id="venus-riseVal">—</div><div class="card-sub" id="venus-riseAz">방위 —</div></div>
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--accent)"></span>남중</div><div class="card-value" id="venus-transitVal">—</div><div class="card-sub" id="venus-transitEl">고도 —</div></div>
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--set)"></span>몰</div><div class="card-value" id="venus-setVal">—</div><div class="card-sub" id="venus-setAz">방위 —</div></div>
+    <div class="hero-summary">
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--rise)"></span>출</span><span class="hs-val" id="venus-riseVal">—</span><span class="hs-sub" id="venus-riseAz">방위 —</span></div>
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--accent)"></span>남중</span><span class="hs-val" id="venus-transitVal">—</span><span class="hs-sub" id="venus-transitEl">고도 —</span></div>
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--set)"></span>몰</span><span class="hs-val" id="venus-setVal">—</span><span class="hs-sub" id="venus-setAz">방위 —</span></div>
+    </div>
   </div>
   <div class="grid2">
     <div class="card"><div class="card-label">현재 위치</div>
@@ -623,11 +635,11 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
       <div class="horizon-badge" id="saturn-badge"><span class="badge-dot" id="saturn-badgeDot"></span><span id="saturn-horizonText">—</span></div>
       <div class="next-event" id="saturn-nextEvent">—</div>
     </div>
-  </div>
-  <div class="grid3">
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--rise)"></span>출</div><div class="card-value" id="saturn-riseVal">—</div><div class="card-sub" id="saturn-riseAz">방위 —</div></div>
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--accent)"></span>남중</div><div class="card-value" id="saturn-transitVal">—</div><div class="card-sub" id="saturn-transitEl">고도 —</div></div>
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--set)"></span>몰</div><div class="card-value" id="saturn-setVal">—</div><div class="card-sub" id="saturn-setAz">방위 —</div></div>
+    <div class="hero-summary">
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--rise)"></span>출</span><span class="hs-val" id="saturn-riseVal">—</span><span class="hs-sub" id="saturn-riseAz">방위 —</span></div>
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--accent)"></span>남중</span><span class="hs-val" id="saturn-transitVal">—</span><span class="hs-sub" id="saturn-transitEl">고도 —</span></div>
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--set)"></span>몰</span><span class="hs-val" id="saturn-setVal">—</span><span class="hs-sub" id="saturn-setAz">방위 —</span></div>
+    </div>
   </div>
   <div class="grid2">
     <div class="card"><div class="card-label">현재 위치</div>
@@ -713,11 +725,11 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
       <div class="horizon-badge" id="mars-badge"><span class="badge-dot" id="mars-badgeDot"></span><span id="mars-horizonText">—</span></div>
       <div class="next-event" id="mars-nextEvent">—</div>
     </div>
-  </div>
-  <div class="grid3">
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--rise)"></span>출</div><div class="card-value" id="mars-riseVal">—</div><div class="card-sub" id="mars-riseAz">방위 —</div></div>
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--accent)"></span>남중</div><div class="card-value" id="mars-transitVal">—</div><div class="card-sub" id="mars-transitEl">고도 —</div></div>
-    <div class="card"><div class="card-label"><span class="card-dot" style="background:var(--set)"></span>몰</div><div class="card-value" id="mars-setVal">—</div><div class="card-sub" id="mars-setAz">방위 —</div></div>
+    <div class="hero-summary">
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--rise)"></span>출</span><span class="hs-val" id="mars-riseVal">—</span><span class="hs-sub" id="mars-riseAz">방위 —</span></div>
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--accent)"></span>남중</span><span class="hs-val" id="mars-transitVal">—</span><span class="hs-sub" id="mars-transitEl">고도 —</span></div>
+      <div class="hs-row"><span class="hs-label"><span class="hs-dot" style="background:var(--set)"></span>몰</span><span class="hs-val" id="mars-setVal">—</span><span class="hs-sub" id="mars-setAz">방위 —</span></div>
+    </div>
   </div>
   <div class="grid2">
     <div class="card"><div class="card-label">현재 위치</div>
