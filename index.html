@@ -1283,6 +1283,17 @@ function onDeviceOrientation(e){
   }
 }
 
+function onDevicePitchForGauge(e){
+  if(!arDiffMode || !arActivePrefix) return;
+  let pitch = null;
+  if(e.beta !== null) pitch = e.beta - 90; // 수평 기준 앙각 (위=양수)
+  if(pitch !== null){
+    arPitch = pitch;
+    const diff = arBodyAlt - (-pitch); // 천체고도 - 카메라앙각 = 차이
+    updateGaugeDiff(arActivePrefix, diff);
+  }
+}
+
 async function requestOrientationPermission(){
   // iOS 13+ requires permission
   if(typeof DeviceOrientationEvent !== 'undefined' &&
@@ -1313,12 +1324,16 @@ async function requestOrientationPermission(){
 let arStream = null;
 let arAnimId = null;
 let arBodyAlt = 0;       // 천체 고도 (°)
+let arActivePrefix = null;  // 현재 AR 활성 패널
+let arDiffMode = false;     // 차이 모드 활성 여부
 let arBodyColor = '#c9a84c';
 let arBodyLabel = '달';
 let arPitch = 0;         // 기기 앙각 (°, 위=양수)
 let arOrientListener = null;
 
 function openAR(prefix, label, color) {
+  arActivePrefix = prefix;
+  arDiffMode = true;
   arBodyAlt   = parseFloat(document.getElementById(prefix + '-altCur')?.textContent) || 0;
   arBodyColor = color;
   arBodyLabel = label;
@@ -1349,7 +1364,13 @@ function openAR(prefix, label, color) {
     }
     arOrientListener = (e) => {
       // beta: 앞뒤 기울기 (-180~180). 세로모드: 평지=0, 하늘=+90
-      if (e.beta !== null) arPitch = e.beta - 90; // 수평 기준 앙각
+      if (e.beta !== null) {
+        arPitch = e.beta - 90; // 수평 기준 앙각
+        if(arDiffMode && arActivePrefix){
+          const diff = arBodyAlt - (-arPitch);
+          updateGaugeDiff(arActivePrefix, diff);
+        }
+      }
     };
     window.addEventListener('deviceorientation', arOrientListener, true);
   }
@@ -1358,9 +1379,128 @@ function openAR(prefix, label, color) {
 
 function closeAR() {
   document.getElementById('arOverlay').classList.remove('show');
+  arDiffMode = false;
+  if(arActivePrefix) {
+    // 게이지 복원: 원래 고도값으로 다시 그리기
+    const altEl = document.getElementById(arActivePrefix+'-altCur');
+    if(altEl) {
+      const val = parseFloat(altEl.textContent) || 0;
+      updateGaugeDiff(arActivePrefix, null); // 차이 모드 해제
+    }
+    arActivePrefix = null;
+  }
   if (arStream) { arStream.getTracks().forEach(t => t.stop()); arStream = null; }
   if (arAnimId) { cancelAnimationFrame(arAnimId); arAnimId = null; }
   if (arOrientListener) { window.removeEventListener('deviceorientation', arOrientListener, true); arOrientListener = null; }
+}
+
+
+// ── 고도계 차이 모드 업데이트 ───────────────────────────────────
+// diff: 천체고도 - 카메라앙각 (null이면 차이모드 해제)
+function updateGaugeDiff(prefix, diff) {
+  const svg = document.getElementById(prefix + '-altGaugeSvg');
+  if(!svg) return;
+
+  const color = arBodyColor || '#c9a84c';
+  const ns = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, txt) => {
+    const el = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k,v));
+    if(txt !== undefined) el.textContent = txt;
+    return el;
+  };
+
+  const CX=150, CY=185, R=95;
+  const px = (r,deg) => (CX + r*Math.cos(deg*Math.PI/180)).toFixed(2);
+  const py = (r,deg) => (CY - r*Math.sin(deg*Math.PI/180)).toFixed(2);
+
+  if(diff === null) {
+    // 차이 모드 해제 → 일반 redraw는 다음 run() 호출 시 자동 복원
+    return;
+  }
+
+  // 차이 모드 레이아웃:
+  // 게이지 중앙(90°, 12시) = 0° 기준
+  // diff > 0: 카메라가 천체보다 낮음 → 바늘 오른쪽(90°→45° 방향)
+  // diff < 0: 카메라가 천체보다 높음 → 바늘 왼쪽(90°→135° 방향)
+  // 범위: ±45° 최대
+  const MAX_DIFF = 45;
+  const clampedDiff = Math.max(-MAX_DIFF, Math.min(MAX_DIFF, diff));
+  // diff=0 → 90°(12시), diff=+45 → 45°(1~2시), diff=-45 → 135°(10~11시)
+  const needleAng = 90 - clampedDiff;
+  const isMatch = Math.abs(diff) < 2;
+  const needleColor = isMatch ? 'var(--rise)' : (Math.abs(diff)<10 ? 'var(--accent)' : color);
+
+  svg.innerHTML = '';
+
+  // 배경 트랙 (전체 반원)
+  svg.appendChild(mk('path', {
+    d: `M ${px(R,180)} ${py(R,180)} A ${R} ${R} 0 0 1 ${px(R,0)} ${py(R,0)}`,
+    fill:'none', stroke:'rgba(128,128,128,0.13)', 'stroke-width':'16', 'stroke-linecap':'round'
+  }));
+
+  // 중앙 기준선 (12시, 0° 기준)
+  svg.appendChild(mk('line',{
+    x1:px(R-14,90), y1:py(R-14,90), x2:px(R+14,90), y2:py(R+14,90),
+    stroke: isMatch ? 'var(--rise)' : 'rgba(255,255,255,0.5)',
+    'stroke-width': isMatch ? '3' : '2', 'stroke-linecap':'round'
+  }));
+
+  // 차이 범위 호: 바늘이 0에서 현재 위치까지 채움
+  if(Math.abs(clampedDiff) > 1) {
+    const fillStart = clampedDiff > 0 ? needleAng : 90;
+    const fillEnd   = clampedDiff > 0 ? 90 : needleAng;
+    svg.appendChild(mk('path', {
+      d: `M ${px(R,fillStart)} ${py(R,fillStart)} A ${R} ${R} 0 0 1 ${px(R,fillEnd)} ${py(R,fillEnd)}`,
+      fill:'none', stroke: needleColor,
+      'stroke-width':'16', 'stroke-linecap':'round', opacity:'0.75'
+    }));
+  }
+
+  // ±15° 눈금
+  [-45,-30,-15,0,15,30,45].forEach(d => {
+    const a = 90 - d;
+    const isMaj = (d % 15 === 0);
+    svg.appendChild(mk('line',{
+      x1:px(R-7,a), y1:py(R-7,a), x2:px(R+7,a), y2:py(R+7,a),
+      stroke:'rgba(255,255,255,0.25)', 'stroke-width': d===0?'2':'1'
+    }));
+    if(d % 15 === 0 && d !== 0){
+      svg.appendChild(mk('text',{
+        x:px(R+20,a), y:py(R+20,a),
+        'text-anchor':'middle','dominant-baseline':'middle',
+        'font-size':'9', fill:'rgba(255,255,255,0.3)', 'font-family':'sans-serif'
+      }, (d>0?'+':'')+d+'°'));
+    }
+  });
+
+  // 바늘
+  svg.appendChild(mk('line',{
+    x1:CX, y1:CY, x2:px(R-18,needleAng), y2:py(R-18,needleAng),
+    stroke:needleColor, 'stroke-width':'4.5', 'stroke-linecap':'round'
+  }));
+  svg.appendChild(mk('circle',{cx:CX,cy:CY,r:'7',
+    fill:needleColor, stroke:'var(--bg3)', 'stroke-width':'2'}));
+
+  // 차이 수치 텍스트
+  const diffText = isMatch ? '0° ✓' : (diff>0?'+':'')+diff.toFixed(1)+'°';
+  svg.appendChild(mk('text',{x:CX, y:CY-52,
+    'text-anchor':'middle', 'font-size': isMatch?'22':'20', 'font-weight':'700',
+    fill: needleColor, 'font-family':"'Noto Sans KR',sans-serif"
+  }, diffText));
+  svg.appendChild(mk('text',{x:CX, y:CY-32,
+    'text-anchor':'middle', 'font-size':'8.5', fill:'var(--muted)', 'font-family':'sans-serif'
+  }, isMatch ? 'ALIGNED ✓' : 'CAM vs BODY'));
+
+  // 라벨: 왼쪽=카메라 높음, 오른쪽=카메라 낮음
+  svg.appendChild(mk('text',{x:px(R+22,180), y:py(R+22,180),
+    'text-anchor':'middle','dominant-baseline':'middle',
+    'font-size':'8', fill:'rgba(255,255,255,0.25)', 'font-family':'sans-serif'
+  },'카메라↑'));
+  svg.appendChild(mk('text',{x:px(R+22,0), y:py(R+22,0),
+    'text-anchor':'middle','dominant-baseline':'middle',
+    'font-size':'8', fill:'rgba(255,255,255,0.25)', 'font-family':'sans-serif'
+  },'카메라↓'));
 }
 
 function startARDraw() {
@@ -1483,6 +1623,11 @@ function startARDraw() {
     const diff = arBodyAlt - camAlt;
     document.getElementById('ar-diff').textContent = (diff >= 0 ? '↑' : '↓') + Math.abs(diff).toFixed(1) + '°';
     document.getElementById('ar-diff').style.color = Math.abs(diff) < 5 ? '#4a9e6b' : '#fff';
+
+    // 고도계 게이지 실시간 업데이트
+    if(arDiffMode && arActivePrefix) {
+      updateGaugeDiff(arActivePrefix, diff);
+    }
   }
   draw();
 }
