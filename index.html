@@ -349,7 +349,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="moon-altGaugeSvg" viewBox="25 60 250 133" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="moon-altGaugeSvg" viewBox="0 0 300 200" style="width:100%;max-width:320px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="moon-altCur" style="color:#c9a84c">—</span></div>
@@ -488,7 +488,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="jupiter-altGaugeSvg" viewBox="25 60 250 133" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="jupiter-altGaugeSvg" viewBox="0 0 300 200" style="width:100%;max-width:320px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="jupiter-altCur" style="color:#c8a878">—</span></div>
@@ -578,7 +578,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="venus-altGaugeSvg" viewBox="25 60 250 133" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="venus-altGaugeSvg" viewBox="0 0 300 200" style="width:100%;max-width:320px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="venus-altCur" style="color:#e8c4a0">—</span></div>
@@ -668,7 +668,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="saturn-altGaugeSvg" viewBox="25 60 250 133" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="saturn-altGaugeSvg" viewBox="0 0 300 200" style="width:100%;max-width:320px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="saturn-altCur" style="color:#b8a86a">—</span></div>
@@ -758,7 +758,7 @@ footer{margin-top:2rem;text-align:center;font-size:11px;color:var(--muted);lette
     </div>
     <div class="altimeter-body">
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
-        <svg id="mars-altGaugeSvg" viewBox="25 60 250 133" style="width:100%;max-width:320px;height:auto;display:block"></svg>
+        <svg id="mars-altGaugeSvg" viewBox="0 0 300 200" style="width:100%;max-width:320px;height:auto;display:block"></svg>
       </div>
       <div class="altimeter-stats">
         <div class="alt-stat-row"><span class="alt-stat-label">현재 고도</span><span class="alt-stat-val" id="mars-altCur" style="color:#d4674a">—</span></div>
@@ -1099,7 +1099,7 @@ function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, ri
   const gauSvg = document.getElementById(prefix+'-altGaugeSvg');
   if(gauSvg){
     gauSvg.innerHTML='';
-    const CX=150, CY=185, R=95;
+    const CX=150, CY=190, R=95;
     // 바늘 각도 매핑: alt(0~90) → 180°~90° (좌측 반원, 지평선=180°에서 시작)
     const angOf = alt => 180 - (Math.max(0,Math.min(90,alt))/90)*90;
     // SVG 좌표: x=CX+R*cos(deg°), y=CY-R*sin(deg°)  ← y를 위로 뒤집음
@@ -1410,7 +1410,7 @@ function updateGaugeDiff(prefix, diff) {
     return el;
   };
 
-  const CX=150, CY=185, R=95;
+  const CX=150, CY=190, R=95;
   const px = (r,deg) => (CX + r*Math.cos(deg*Math.PI/180)).toFixed(2);
   const py = (r,deg) => (CY - r*Math.sin(deg*Math.PI/180)).toFixed(2);
 
