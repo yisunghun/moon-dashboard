@@ -1094,6 +1094,8 @@ function drawAltimeter(prefix, curAlt, maxAlt, riseAlt, setAlt, color, curAz, ri
   // viewBox="0 0 300 220"
   // 무지개형 트랙: 좌(180°)=0°(지평선), 정상(90°)=90°(천정), 우(0°)=0°(지평선)
   // 바늘은 좌측 반원(180°→90°)에 고도 0~90을 매핑 (지평선 기준 표시)
+  // AR 차이 모드 중에는 해당 prefix의 게이지를 덮어쓰지 않음
+  if(typeof arDiffMode !== 'undefined' && arDiffMode && arActivePrefix === prefix) return;
   const gauSvg = document.getElementById(prefix+'-altGaugeSvg');
   if(gauSvg){
     gauSvg.innerHTML='';
@@ -1342,6 +1344,9 @@ function openAR(prefix, label, color) {
   document.getElementById('ar-bodyAlt').textContent  = (arBodyAlt >= 0 ? '+' : '') + arBodyAlt.toFixed(1) + '°';
   document.getElementById('arOverlay').classList.add('show');
 
+  // 즉시 차이 모드 게이지 표시 (카메라 앙각 0°로 초기화)
+  updateGaugeDiff(prefix, arBodyAlt - 0);
+
   // 카메라 스트림
   navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
     .then(stream => {
@@ -1380,18 +1385,13 @@ function openAR(prefix, label, color) {
 function closeAR() {
   document.getElementById('arOverlay').classList.remove('show');
   arDiffMode = false;
-  if(arActivePrefix) {
-    // 게이지 복원: 원래 고도값으로 다시 그리기
-    const altEl = document.getElementById(arActivePrefix+'-altCur');
-    if(altEl) {
-      const val = parseFloat(altEl.textContent) || 0;
-      updateGaugeDiff(arActivePrefix, null); // 차이 모드 해제
-    }
-    arActivePrefix = null;
-  }
+  const prevPrefix = arActivePrefix;
+  arActivePrefix = null;
   if (arStream) { arStream.getTracks().forEach(t => t.stop()); arStream = null; }
   if (arAnimId) { cancelAnimationFrame(arAnimId); arAnimId = null; }
   if (arOrientListener) { window.removeEventListener('deviceorientation', arOrientListener, true); arOrientListener = null; }
+  // 게이지를 일반 모드로 즉시 복원 (run() 호출)
+  if(prevPrefix) run();
 }
 
 
@@ -2191,6 +2191,12 @@ setInterval(()=>{
 // ═══════════════════════════════════════════════════════
 // 부트스트랩
 // ═══════════════════════════════════════════════════════
+// AR 상태 초기화 보장
+arDiffMode = false;
+arActivePrefix = null;
+arStream = null;
+arAnimId = null;
+
 run();
 generateIcon();
 initPageMap();
